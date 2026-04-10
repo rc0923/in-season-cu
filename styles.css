@@ -1,0 +1,441 @@
+:root {
+  --ice: #e8f4f8;
+  --ice-dark: #c8dfe8;
+  --rink: #0a1628;
+  --rink-mid: #112240;
+  --rink-light: #1a3a5c;
+  --gold: #f5a623;
+  --gold-dim: #c47d10;
+  --red: #e63946;
+  --green: #2ec27e;
+  --text: #e8f4f8;
+  --text-dim: #7a9ab5;
+  --line: rgba(232,244,248,0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--rink);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent, transparent 79px, rgba(255,255,255,0.02) 79px, rgba(255,255,255,0.02) 80px),
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(26,58,92,0.6) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.03);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrap {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
+
+/* ── HEADER ── */
+header {
+  padding: 40px 0 32px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 32px;
+}
+
+.logo-area h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(36px, 6vw, 56px);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.logo-area .subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.updated-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.updated-badge span {
+  display: block;
+  color: var(--gold);
+  font-size: 13px;
+  letter-spacing: 2px;
+  font-weight: 500;
+}
+
+/* ── CHAMPION HERO ── */
+.champion-hero {
+  background: linear-gradient(135deg, var(--rink-mid) 0%, var(--rink-light) 100%);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 32px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.champion-hero::before {
+  content: '🏆';
+  position: absolute;
+  right: -10px; top: -10px;
+  font-size: 140px;
+  opacity: 0.06;
+  transform: rotate(15deg);
+  pointer-events: none;
+}
+
+.champion-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.champion-team {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(32px, 5vw, 48px);
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.champion-owner {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.champion-owner span { color: var(--gold); font-weight: 500; }
+
+.champion-stats {
+  display: flex;
+  gap: 32px;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.champ-stat .val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: var(--gold);
+  letter-spacing: 1px;
+}
+
+.champ-stat .lbl {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── TODAY'S GAME ── */
+.today-box {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px 32px;
+  margin-bottom: 24px;
+}
+
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.game-matchup {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.game-team { flex: 1; text-align: center; }
+
+.game-team .abbr {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.game-team .full { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+.game-team .owner-tag { font-size: 10px; color: var(--text-dim); margin-top: 4px; letter-spacing: 1px; font-family: 'DM Mono', monospace; }
+
+.game-team.is-champ .abbr { color: var(--gold); }
+
+.game-score { text-align: center; padding: 0 20px; flex-shrink: 0; }
+
+.game-score .score {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 42px;
+  letter-spacing: 4px;
+  line-height: 1;
+}
+
+.game-score .status {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-top: 4px;
+  text-transform: uppercase;
+}
+
+.status-live  { color: var(--green); }
+.status-final { color: var(--text-dim); }
+.status-soon  { color: var(--text-dim); }
+
+.no-game {
+  font-size: 14px;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.loading-pulse {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+/* ── STANDINGS ── */
+.standings {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.standings-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+.standings-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+.standings-cols {
+  display: grid;
+  grid-template-columns: 1fr repeat(5, 72px);
+  padding: 8px 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.standings-cols span {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.standings-cols span:first-child { text-align: left; }
+
+.player-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(5, 72px);
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.player-row:last-of-type { border-bottom: none; }
+.player-row:hover { background: rgba(255,255,255,0.03); }
+
+.player-name-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.player-rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.player-name { font-size: 15px; font-weight: 500; }
+.crown { font-size: 14px; margin-left: 4px; }
+
+.player-stat {
+  font-family: 'DM Mono', monospace;
+  font-size: 14px;
+  text-align: right;
+}
+
+.player-stat.leader { color: var(--gold); font-weight: 500; }
+
+/* Team pills */
+.player-teams {
+  grid-column: 1 / -1;
+  padding: 12px 28px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  background: rgba(0,0,0,0.15);
+}
+
+.team-pill {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  border: 1px solid var(--line);
+  color: var(--text-dim);
+  background: var(--rink);
+  cursor: default;
+  transition: all 0.15s;
+}
+
+.team-pill.is-champ {
+  border-color: var(--gold);
+  color: var(--gold);
+  background: rgba(245,166,35,0.08);
+}
+
+.team-pill.eliminated { opacity: 0.3; text-decoration: line-through; }
+
+/* ── GAME LOG ── */
+.game-log {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.game-log-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-log-header h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+
+.toggle-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  background: none;
+  border: 1px solid var(--line);
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: all 0.15s;
+}
+
+.toggle-btn:hover { color: var(--ice); border-color: rgba(255,255,255,0.2); }
+
+.log-entry {
+  display: grid;
+  grid-template-columns: 36px 90px 1fr 24px 1fr 70px;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-bottom: 1px solid var(--line);
+  font-size: 13px;
+  transition: background 0.15s;
+}
+
+.log-entry:last-child { border-bottom: none; }
+.log-entry:hover { background: rgba(255,255,255,0.02); }
+
+.log-num  { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: right; }
+.log-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); }
+.log-team { font-weight: 500; }
+.log-team.is-champ { color: var(--gold); }
+.log-at   { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: center; }
+.log-owner { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: right; letter-spacing: 1px; }
+
+/* Fade-in */
+.section { animation: fadeIn 0.4s ease both; }
+.section:nth-child(2) { animation-delay: 0.05s; }
+.section:nth-child(3) { animation-delay: 0.1s; }
+.section:nth-child(4) { animation-delay: 0.15s; }
+.section:nth-child(5) { animation-delay: 0.2s; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Error banner */
+.error-banner {
+  background: rgba(230,57,70,0.1);
+  border: 1px solid rgba(230,57,70,0.3);
+  border-radius: 8px;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--red);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 600px) {
+  .standings-cols, .player-row { grid-template-columns: 1fr repeat(3, 60px); }
+  .standings-cols span:nth-child(5),
+  .player-row .player-stat:nth-child(5) { display: none; }
+  .log-entry { grid-template-columns: 28px 76px 1fr 18px 1fr; }
+  .log-owner { display: none; }
+  .champion-stats { gap: 20px; }
+}

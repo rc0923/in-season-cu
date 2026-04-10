@@ -1,0 +1,38 @@
+name: Update Cup State
+
+on:
+  schedule:
+    # Runs at 2am, 5am, 8am, and 11pm ET (covers end of most games)
+    - cron: '0 7,10,13 * * *'   # 2am, 5am, 8am ET  (UTC offset -5)
+    - cron: '0 4 * * *'          # 11pm ET previous day
+  workflow_dispatch:              # allow manual trigger from GitHub UI
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run updater
+        run: node .github/scripts/update-state.js
+
+      - name: Commit updated state if changed
+        run: |
+          git config user.name  "cup-bot"
+          git config user.email "cup-bot@users.noreply.github.com"
+          git add state.json
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore: auto-update cup state $(date -u '+%Y-%m-%d %H:%M UTC')"
+            git push
+          fi

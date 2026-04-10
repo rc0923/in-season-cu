@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BStash In Season Cup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="section">
+    <div class="logo-area">
+      <h1>BStash Cup</h1>
+      <div class="subtitle">In Season Stanley Cup · 2025–26</div>
+    </div>
+    <div class="updated-badge">
+      Last updated
+      <span id="last-updated">—</span>
+    </div>
+  </header>
+
+  <div id="error-area"></div>
+
+  <!-- Champion Hero -->
+  <div class="champion-hero section">
+    <div class="champion-label">Current Champion</div>
+    <div class="champion-team" id="champ-team">—</div>
+    <div class="champion-owner">Owned by <span id="champ-owner">—</span></div>
+    <div class="champion-stats">
+      <div class="champ-stat"><div class="val" id="champ-days">—</div><div class="lbl">Days Held</div></div>
+      <div class="champ-stat"><div class="val" id="champ-reigns">—</div><div class="lbl">Title Reigns</div></div>
+      <div class="champ-stat"><div class="val" id="champ-wins">—</div><div class="lbl">Wins</div></div>
+      <div class="champ-stat"><div class="val" id="champ-streak">—</div><div class="lbl">Longest Streak</div></div>
+    </div>
+  </div>
+
+  <!-- Today's Game -->
+  <div class="today-box section">
+    <div class="section-label">Today's Matchup</div>
+    <div id="today-content"><span class="loading-pulse">Checking NHL schedule...</span></div>
+  </div>
+
+  <!-- Standings -->
+  <div class="standings section">
+    <div class="standings-header"><h2>Standings</h2></div>
+    <div class="standings-cols">
+      <span>Player</span>
+      <span>Days</span>
+      <span>Reigns</span>
+      <span>W</span>
+      <span>L</span>
+      <span>Streak</span>
+    </div>
+    <div id="standings-body"></div>
+  </div>
+
+  <!-- Game Log -->
+  <div class="game-log section">
+    <div class="game-log-header">
+      <h2>Game Log</h2>
+      <button class="toggle-btn" id="log-toggle" onclick="toggleLog()">Show All</button>
+    </div>
+    <div id="log-body"></div>
+  </div>
+
+</div>
+
+<script>
+// ── constants ────────────────────────────────────────────────────────────────
+
+const TEAM_NAMES = {
+  ANA:'Anaheim Ducks', BOS:'Boston Bruins', BUF:'Buffalo Sabres',
+  CGY:'Calgary Flames', CAR:'Carolina Hurricanes', CHI:'Chicago Blackhawks',
+  COL:'Colorado Avalanche', CBJ:'Columbus Blue Jackets', DAL:'Dallas Stars',
+  DET:'Detroit Red Wings', EDM:'Edmonton Oilers', FLA:'Florida Panthers',
+  LAK:'Los Angeles Kings', MIN:'Minnesota Wild', MTL:'Montreal Canadiens',
+  NSH:'Nashville Predators', NJD:'New Jersey Devils', NYI:'New York Islanders',
+  NYR:'New York Rangers', OTT:'Ottawa Senators', PHI:'Philadelphia Flyers',
+  PIT:'Pittsburgh Penguins', SJS:'San Jose Sharks', SEA:'Seattle Kraken',
+  STL:'St. Louis Blues', TBL:'Tampa Bay Lightning', TOR:'Toronto Maple Leafs',
+  UTA:'Utah Mammoth', VAN:'Vancouver Canucks', VGK:'Vegas Golden Knights',
+  WSH:'Washington Capitals', WPG:'Winnipeg Jets',
+};
+
+// Teams that have been eliminated from cup contention this season
+// The Action script manages this via the ❌ emoji in the sheet;
+// for now we derive it from teams with zero days AND losses > 0 that never held the cup
+// Simpler: just flag teams with no days and at least one loss
+function isEliminated(teamStat) {
+  return teamStat.days === 0 && teamStat.reigns === 0;
+}
+
+// ── state ────────────────────────────────────────────────────────────────────
+
+let STATE = null;
+let logExpanded = false;
+
+// ── data layer ───────────────────────────────────────────────────────────────
+// PHASE 2 UPGRADE POINT: replace this fetch with your API endpoint
+
+async function loadState() {
+  const res = await fetch('state.json?bust=' + Date.now());
+  if (!res.ok) throw new Error(`Failed to load state.json: ${res.status}`);
+  return res.json();
+}
+
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+function ownerOf(abbr) {
+  if (!STATE) return '—';
+  return STATE.players.find(p => p.teams.some(t => t.abbr === abbr))?.name ?? '—';
+}
+
+function teamName(abbr) { return TEAM_NAMES[abbr] ?? abbr; }
+
+function formatDate(str) {
+  const d = new Date(str + 'T12:00:00');
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+
+// ── render champion ──────────────────────────────────────────────────────────
+
+function renderChampion() {
+  const champ = STATE.champion;
+  const owner = STATE.players.find(p => p.teams.some(t => t.abbr === champ));
+
+  document.getElementById('champ-team').textContent    = teamName(champ);
+  document.getElementById('champ-owner').textContent   = owner?.name ?? '—';
+  document.getElementById('champ-days').textContent    = owner?.days ?? '—';
+  document.getElementById('champ-reigns').textContent  = owner?.reigns ?? '—';
+  document.getElementById('champ-wins').textContent    = owner?.wins ?? '—';
+  document.getElementById('champ-streak').textContent  = owner?.streak ?? '—';
+  document.getElementById('last-updated').textContent  = formatDate(STATE.lastUpdated);
+}
+
+// ── render standings ─────────────────────────────────────────────────────────
+
+function renderStandings() {
+  const sorted = [...STATE.players].sort((a, b) =>
+    b.days - a.days || b.wins - a.wins
+  );
+  const maxDays   = Math.max(...sorted.map(p => p.days));
+  const maxWins   = Math.max(...sorted.map(p => p.wins));
+  const maxStreak = Math.max(...sorted.map(p => p.streak));
+
+  const body = document.getElementById('standings-body');
+  body.innerHTML = '';
+
+  sorted.forEach((player, i) => {
+    const isChampOwner = player.teams.some(t => t.abbr === STATE.champion);
+
+    const row = document.createElement('div');
+    row.className = 'player-row';
+    row.dataset.name = player.name;
+    row.onclick = () => toggleTeams(player.name);
+
+    row.innerHTML = `
+      <div class="player-name-area">
+        <span class="player-rank">${i + 1}</span>
+        <span class="player-name">${player.name}${isChampOwner ? '<span class="crown">🏆</span>' : ''}</span>
+      </div>
+      <div class="player-stat ${player.days === maxDays && maxDays > 0 ? 'leader' : ''}">${player.days}</div>
+      <div class="player-stat">${player.reigns}</div>
+      <div class="player-stat ${player.wins === maxWins && maxWins > 0 ? 'leader' : ''}">${player.wins}</div>
+      <div class="player-stat">${player.losses}</div>
+      <div class="player-stat ${player.streak === maxStreak && maxStreak > 0 ? 'leader' : ''}">${player.streak}</div>
+    `;
+    body.appendChild(row);
+
+    // Team pills row (hidden until clicked)
+    const teamsRow = document.createElement('div');
+    teamsRow.className = 'player-teams';
+    teamsRow.id = `teams-${player.name}`;
+    teamsRow.style.display = 'none';
+
+    player.teams.forEach(t => {
+      const pill = document.createElement('span');
+      const champ  = t.abbr === STATE.champion;
+      const elim   = isEliminated(t);
+      pill.className = `team-pill${champ ? ' is-champ' : ''}${elim && !champ ? ' eliminated' : ''}`;
+      pill.textContent = t.abbr;
+      const tipStats = t.days > 0
+        ? `${t.days}d · ${t.wins}W-${t.losses}L · best ${t.longestStreak}`
+        : `${t.losses}L`;
+      pill.title = `${teamName(t.abbr)} — ${tipStats}`;
+      teamsRow.appendChild(pill);
+    });
+
+    body.appendChild(teamsRow);
+  });
+}
+
+function toggleTeams(name) {
+  const el  = document.getElementById(`teams-${name}`);
+  const row = document.querySelector(`[data-name="${name}"]`);
+  if (!el) return;
+  const open = el.style.display !== 'none';
+  el.style.display = open ? 'none' : 'flex';
+  row.style.background = open ? '' : 'rgba(255,255,255,0.02)';
+}
+
+// ── render game log ──────────────────────────────────────────────────────────
+
+function renderLog() {
+  const body = document.getElementById('log-body');
+  body.innerHTML = '';
+  const games = logExpanded
+    ? [...STATE.gameLog].reverse()
+    : [...STATE.gameLog].slice(-10).reverse();
+
+  games.forEach(g => {
+    const row = document.createElement('div');
+    row.className = 'log-entry';
+
+    const vChamp = g.visitor === STATE.champion;
+    const hChamp = g.home    === STATE.champion;
+    const owner  = ownerOf(g.home);
+
+    row.innerHTML = `
+      <div class="log-num">${g.num}</div>
+      <div class="log-date">${formatDate(g.date)}</div>
+      <div class="log-team ${vChamp ? 'is-champ' : ''}">${g.visitor}</div>
+      <div class="log-at">@</div>
+      <div class="log-team ${hChamp ? 'is-champ' : ''}">${g.home}</div>
+      <div class="log-owner">${owner}</div>
+    `;
+    body.appendChild(row);
+  });
+}
+
+function toggleLog() {
+  logExpanded = !logExpanded;
+  document.getElementById('log-toggle').textContent = logExpanded ? 'Show Recent' : 'Show All';
+  renderLog();
+}
+
+// ── today's game (live NHL API) ───────────────────────────────────────────────
+
+async function loadTodayGame() {
+  const el = document.getElementById('today-content');
+  const champ = STATE.champion;
+
+  try {
+    const res  = await fetch(`https://api-web.nhle.com/v1/schedule/${todayStr()}`);
+    const data = await res.json();
+    const games = data?.gameWeek?.flatMap(w => w.games) ?? [];
+
+    if (!games.length) {
+      el.innerHTML = `<div class="no-game">No NHL games today.</div>`;
+      return;
+    }
+
+    const champGame = games.find(g =>
+      g.awayTeam?.abbrev === champ || g.homeTeam?.abbrev === champ
+    );
+
+    if (!champGame) {
+      el.innerHTML = `<div class="no-game">${teamName(champ)} is not playing today.</div>`;
+      return;
+    }
+
+    renderTodayGame(champGame);
+  } catch {
+    el.innerHTML = `<div class="no-game">Could not load schedule — check your connection.</div>`;
+  }
+}
+
+function renderTodayGame(game) {
+  const el    = document.getElementById('today-content');
+  const away  = game.awayTeam;
+  const home  = game.homeTeam;
+  const state = game.gameState;
+  const champ = STATE.champion;
+
+  let scoreHtml;
+
+  if (state === 'FUT' || state === 'PRE') {
+    const t = game.startTimeUTC
+      ? new Date(game.startTimeUTC).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })
+      : 'TBD';
+    scoreHtml = `<div class="game-score">
+      <div class="score" style="font-size:18px;color:var(--text-dim)">${t}</div>
+      <div class="status status-soon">Upcoming</div>
+    </div>`;
+  } else if (state === 'LIVE' || state === 'CRIT') {
+    const p = game.period ?? '?';
+    const c = game.clock?.timeRemaining ?? '';
+    scoreHtml = `<div class="game-score">
+      <div class="score">${away.score ?? 0} – ${home.score ?? 0}</div>
+      <div class="status status-live">P${p} ${c}</div>
+    </div>`;
+  } else {
+    scoreHtml = `<div class="game-score">
+      <div class="score">${away.score ?? 0} – ${home.score ?? 0}</div>
+      <div class="status status-final">Final</div>
+    </div>`;
+  }
+
+  el.innerHTML = `
+    <div class="game-matchup">
+      <div class="game-team ${away.abbrev === champ ? 'is-champ' : ''}">
+        <div class="abbr">${away.abbrev}</div>
+        <div class="full">${away.name?.default ?? teamName(away.abbrev)}</div>
+        <div class="owner-tag">${ownerOf(away.abbrev) !== '—' ? ownerOf(away.abbrev) : ''}</div>
+      </div>
+      ${scoreHtml}
+      <div class="game-team ${home.abbrev === champ ? 'is-champ' : ''}">
+        <div class="abbr">${home.abbrev}</div>
+        <div class="full">${home.name?.default ?? teamName(home.abbrev)}</div>
+        <div class="owner-tag">${ownerOf(home.abbrev) !== '—' ? ownerOf(home.abbrev) : ''}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ── boot ─────────────────────────────────────────────────────────────────────
+
+async function init() {
+  try {
+    STATE = await loadState();
+  } catch (e) {
+    document.getElementById('error-area').innerHTML =
+      `<div class="error-banner">⚠️ Could not load state.json — ${e.message}</div>`;
+    return;
+  }
+
+  renderChampion();
+  renderStandings();
+  renderLog();
+  loadTodayGame();
+}
+
+init();
+</script>
+</body>
+</html>
