@@ -22,7 +22,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Run updater
+      - name: Run updater (yesterday, for late-finishing games)
+        run: node .github/scripts/update-state.js $(date -d 'yesterday' '+%Y-%m-%d' --utc)
+
+      - name: Run updater (today)
         run: node .github/scripts/update-state.js
 
       - name: Commit updated state if changed

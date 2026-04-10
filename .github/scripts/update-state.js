@@ -28,12 +28,16 @@ function get(url) {
         catch (e) { reject(new Error(`JSON parse failed for ${url}: ${e.message}`)); }
       });
     }).on('error', reject)
-      .setTimeout(10000, function() { this.destroy(new Error('timeout')); });
+      .setTimeout(10000, function () { this.destroy(new Error('timeout')); });
   });
 }
 
 function today() {
-  return new Date().toISOString().slice(0, 10);
+  // Allow overriding the date via CLI arg: node update-state.js 2026-04-09
+  const arg = process.argv[2];
+  if (arg && /^\d{4}-\d{2}-\d{2}$/.test(arg)) return arg;
+  // Use Eastern Time — NHL games are scheduled on ET dates
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
 function ownerOf(state, abbr) {
@@ -96,10 +100,10 @@ async function main() {
 
   // Determine winner and loser
   const champIsHome = home.abbrev === champion;
-  const champScore  = champIsHome ? homeScore : awayScore;
-  const oppScore    = champIsHome ? awayScore : homeScore;
-  const oppAbbr     = champIsHome ? away.abbrev : home.abbrev;
-  const champWon    = champScore > oppScore;
+  const champScore = champIsHome ? homeScore : awayScore;
+  const oppScore = champIsHome ? awayScore : homeScore;
+  const oppAbbr = champIsHome ? away.abbrev : home.abbrev;
+  const champWon = champScore > oppScore;
 
   console.log(`Champion (${champion}) ${champWon ? 'WON' : 'LOST'} ${champScore}-${oppScore} vs ${oppAbbr}`);
 
@@ -109,11 +113,11 @@ async function main() {
 
   // Add game to log
   state.gameLog.push({
-    num:       nextGameNum,
-    date:      today(),
-    visitor:   away.abbrev,
-    home:      home.abbrev,
-    score:     `${awayScore}-${homeScore}`,
+    num: nextGameNum,
+    date: today(),
+    visitor: away.abbrev,
+    home: home.abbrev,
+    score: `${awayScore}-${homeScore}`,
     nhlGameId: gameId
   });
 
@@ -124,9 +128,9 @@ async function main() {
     if (champTeamStat) {
       champTeamStat.days += 1;
       if (champWon) {
-        champTeamStat.wins  += 1;
-        champOwner.wins     += 1;
-        champOwner.days     += 1;
+        champTeamStat.wins += 1;
+        champOwner.wins += 1;
+        champOwner.days += 1;
         // streak is tracked on the team level as current streak
         // longestStreak is the record
         champTeamStat.currentStreak = (champTeamStat.currentStreak ?? 0) + 1;
@@ -137,9 +141,9 @@ async function main() {
           }
         }
       } else {
-        champTeamStat.losses     += 1;
-        champOwner.losses        += 1;
-        champOwner.days          += 1;
+        champTeamStat.losses += 1;
+        champOwner.losses += 1;
+        champOwner.days += 1;
         champTeamStat.currentStreak = 0;
       }
     }
@@ -156,9 +160,9 @@ async function main() {
     if (newOwner) {
       const newTeamStat = teamStatOf(newOwner, newChampion);
       if (newTeamStat) {
-        newTeamStat.reigns       += 1;
+        newTeamStat.reigns += 1;
         newTeamStat.currentStreak = 1;
-        newOwner.reigns          += 1;
+        newOwner.reigns += 1;
       }
     }
   } else {
