@@ -1,4 +1,4 @@
-# BStash In Season Cup
+# In Season Cup
 
 Auto-updating NHL In Season Stanley Cup tracker. Hosted on GitHub Pages, updates automatically after each game.
 
@@ -9,52 +9,14 @@ Auto-updating NHL In Season Stanley Cup tracker. Hosted on GitHub Pages, updates
 - `.github/workflows/update-cup.yml` — runs 4x per day, checks the NHL API, updates `state.json` if a new game finished, commits the result
 - GitHub Pages serves the latest `index.html` + `state.json` automatically
 
-## First-time setup (~10 minutes)
-
-### 1. Create the GitHub repo
-
-1. Go to [github.com/new](https://github.com/new)
-2. Name it `bstash-cup` (or anything you like)
-3. Set it to **Public** (required for free GitHub Pages)
-4. Don't add a README — leave it empty
-5. Click **Create repository**
-
-### 2. Upload the files
-
-On the repo page, click **Add file → Upload files** and upload:
-- `index.html`
-- `state.json`
-
-Then create the folder structure for the workflow. GitHub's UI can't create empty folders, so use this approach:
-1. Click **Add file → Create new file**
-2. In the filename box type: `.github/workflows/update-cup.yml`
-3. Paste the contents of `update-cup.yml`
-4. Click **Commit changes**
-
-Then create the script:
-1. Click **Add file → Create new file**
-2. Filename: `.github/scripts/update-state.js`
-3. Paste the contents of `update-state.js`
-4. Commit
-
-### 3. Enable GitHub Pages
-
-1. Go to your repo **Settings → Pages**
-2. Under **Source**, select **Deploy from a branch**
-3. Branch: `main`, folder: `/ (root)`
-4. Click **Save**
-
-After a minute or two your site will be live at:
-`https://YOUR-USERNAME.github.io/bstash-cup/`
-
-### 4. Give the workflow permission to commit
+### Give the workflow permission to commit
 
 1. Go to **Settings → Actions → General**
 2. Scroll to **Workflow permissions**
 3. Select **Read and write permissions**
 4. Click **Save**
 
-### 5. Test the workflow
+### Test the workflow
 
 1. Go to **Actions** tab in your repo
 2. Click **Update Cup State** in the left sidebar

@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The ISC</title>
+  <title>The ISC 2025-26</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link
     href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
@@ -298,18 +298,21 @@
           }
         }
 
-        // Compute which teams can still reach the cup and re-render standings
-        const futureGames = allGames.filter(g => g.gameState === 'FUT' || g.gameState === 'PRE');
+        // Compute which teams can still reach the cup and re-render standings.
+        // Include LIVE/CRIT games — the cup could still transfer in an ongoing game.
+        const futureGames = allGames.filter(g =>
+          g.gameState === 'FUT' || g.gameState === 'PRE' ||
+          g.gameState === 'LIVE' || g.gameState === 'CRIT'
+        );
         STATE.reachableTeams = computeReachableTeams(champ, futureGames);
         renderStandings();
 
-        const todayGames = allGames.filter(g => g.date === todayStr());
-        if (!todayGames.length) {
+        if (!allGames.length) {
           el.innerHTML = `<div class="no-game">No NHL games today.</div>`;
           return;
         }
 
-        const champGame = todayGames.find(g =>
+        const champGame = allGames.find(g =>
           g.awayTeam?.abbrev === champ || g.homeTeam?.abbrev === champ
         );
 
