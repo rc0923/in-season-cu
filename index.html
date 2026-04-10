@@ -264,7 +264,7 @@
       const champ = STATE.champion;
 
       try {
-        const res = await fetch(`https://nhl-proxy.rc0923.workers.dev/${todayStr()}`);
+        const res = await fetch(`https://nhl-proxy.rc0923.workers.dev/schedule/${todayStr()}`);
         const data = await res.json();
         const games = data?.gameWeek?.flatMap(w => w.games) ?? [];
 
