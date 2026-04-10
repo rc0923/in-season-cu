@@ -389,7 +389,7 @@ header {
 
 .log-entry {
   display: grid;
-  grid-template-columns: 36px 90px 1fr 24px 1fr 70px;
+  grid-template-columns: 36px 90px 1fr 56px 1fr 70px;
   align-items: center;
   gap: 8px;
   padding: 10px 24px;
@@ -404,8 +404,9 @@ header {
 .log-num  { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: right; }
 .log-date { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); }
 .log-team { font-weight: 500; }
+.log-entry > div:nth-child(3) { text-align: right; }
 .log-team.is-champ { color: var(--gold); }
-.log-at   { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: center; }
+.log-score { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--text-dim); text-align: center; }
 .log-owner { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-dim); text-align: right; letter-spacing: 1px; }
 
 /* Fade-in */
@@ -437,7 +438,7 @@ header {
   .standings-cols span:nth-child(5),
   .player-row .player-stat:nth-child(3),
   .player-row .player-stat:nth-child(5) { display: none; }
-  .log-entry { grid-template-columns: 28px 76px 1fr 18px 1fr; }
+  .log-entry { grid-template-columns: 28px 76px 1fr 48px 1fr; }
   .log-owner { display: none; }
   .champion-stats { gap: 20px; }
 }

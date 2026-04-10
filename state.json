@@ -307,49 +307,49 @@
       "date": "2025-10-07",
       "visitor": "CHI",
       "home": "FLA",
-      "score": null
+      "score": "2-3"
     },
     {
       "num": 2,
       "date": "2025-10-09",
       "visitor": "PHI",
       "home": "FLA",
-      "score": null
+      "score": "1-2"
     },
     {
       "num": 3,
       "date": "2025-10-11",
       "visitor": "OTT",
       "home": "FLA",
-      "score": null
+      "score": "2-6"
     },
     {
       "num": 4,
       "date": "2025-10-13",
       "visitor": "FLA",
       "home": "PHI",
-      "score": null
+      "score": "2-5"
     },
     {
       "num": 5,
       "date": "2025-10-16",
       "visitor": "WPG",
       "home": "PHI",
-      "score": null
+      "score": "5-2"
     },
     {
       "num": 6,
       "date": "2025-10-18",
       "visitor": "NSH",
       "home": "WPG",
-      "score": null
+      "score": "1-4"
     },
     {
       "num": 7,
       "date": "2025-10-20",
       "visitor": "WPG",
       "home": "CGY",
-      "score": null
+      "score": "2-1"
     },
     {
       "num": 8,
@@ -363,14 +363,14 @@
       "date": "2025-10-25",
       "visitor": "EDM",
       "home": "SEA",
-      "score": null
+      "score": "2-3"
     },
     {
       "num": 10,
       "date": "2025-10-28",
       "visitor": "MTL",
       "home": "SEA",
-      "score": null
+      "score": "4-3"
     },
     {
       "num": 11,
@@ -384,35 +384,35 @@
       "date": "2025-11-04",
       "visitor": "PHI",
       "home": "MTL",
-      "score": null
+      "score": "5-4"
     },
     {
       "num": 13,
       "date": "2025-11-06",
       "visitor": "PHI",
       "home": "NSH",
-      "score": null
+      "score": "3-1"
     },
     {
       "num": 14,
       "date": "2025-11-08",
       "visitor": "OTT",
       "home": "PHI",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 15,
       "date": "2025-11-09",
       "visitor": "UTA",
       "home": "OTT",
-      "score": null
+      "score": "2-4"
     },
     {
       "num": 16,
       "date": "2025-11-11",
       "visitor": "DAL",
       "home": "OTT",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 17,
@@ -426,14 +426,14 @@
       "date": "2025-11-15",
       "visitor": "PHI",
       "home": "DAL",
-      "score": null
+      "score": "1-5"
     },
     {
       "num": 19,
       "date": "2025-11-18",
       "visitor": "NYI",
       "home": "DAL",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 20,
@@ -447,49 +447,49 @@
       "date": "2025-11-22",
       "visitor": "STL",
       "home": "NYI",
-      "score": null
+      "score": "2-1"
     },
     {
       "num": 22,
       "date": "2025-11-24",
       "visitor": "STL",
       "home": "NYR",
-      "score": null
+      "score": "2-3"
     },
     {
       "num": 23,
       "date": "2025-11-26",
       "visitor": "NYR",
       "home": "CAR",
-      "score": null
+      "score": "4-2"
     },
     {
       "num": 24,
       "date": "2025-11-28",
       "visitor": "NYR",
       "home": "BOS",
-      "score": null
+      "score": "6-2"
     },
     {
       "num": 25,
       "date": "2025-11-29",
       "visitor": "TBL",
       "home": "NYR",
-      "score": null
+      "score": "4-1"
     },
     {
       "num": 26,
       "date": "2025-12-02",
       "visitor": "TBL",
       "home": "NYI",
-      "score": null
+      "score": "1-2"
     },
     {
       "num": 27,
       "date": "2025-12-04",
       "visitor": "COL",
       "home": "NYI",
-      "score": null
+      "score": "3-6"
     },
     {
       "num": 28,
@@ -503,49 +503,49 @@
       "date": "2025-12-07",
       "visitor": "NYI",
       "home": "FLA",
-      "score": null
+      "score": "1-4"
     },
     {
       "num": 30,
       "date": "2025-12-10",
       "visitor": "FLA",
       "home": "UTA",
-      "score": null
+      "score": "4-3"
     },
     {
       "num": 31,
       "date": "2025-12-11",
       "visitor": "FLA",
       "home": "COL",
-      "score": null
+      "score": "2-6"
     },
     {
       "num": 32,
       "date": "2025-12-13",
       "visitor": "NSH",
       "home": "COL",
-      "score": null
+      "score": "2-4"
     },
     {
       "num": 33,
       "date": "2025-12-16",
       "visitor": "COL",
       "home": "SEA",
-      "score": null
+      "score": "5-3"
     },
     {
       "num": 34,
       "date": "2025-12-19",
       "visitor": "WPG",
       "home": "COL",
-      "score": null
+      "score": "2-3"
     },
     {
       "num": 35,
       "date": "2025-12-21",
       "visitor": "COL",
       "home": "MIN",
-      "score": null
+      "score": "5-1"
     },
     {
       "num": 36,
@@ -559,49 +559,49 @@
       "date": "2025-12-27",
       "visitor": "COL",
       "home": "VGK",
-      "score": null
+      "score": "6-5"
     },
     {
       "num": 38,
       "date": "2025-12-29",
       "visitor": "LAK",
       "home": "COL",
-      "score": null
+      "score": "2-5"
     },
     {
       "num": 39,
       "date": "2025-12-31",
       "visitor": "STL",
       "home": "COL",
-      "score": null
+      "score": "1-6"
     },
     {
       "num": 40,
       "date": "2026-01-03",
       "visitor": "COL",
       "home": "CAR",
-      "score": null
+      "score": "5-3"
     },
     {
       "num": 41,
       "date": "2026-01-04",
       "visitor": "COL",
       "home": "FLA",
-      "score": null
+      "score": "1-2"
     },
     {
       "num": 42,
       "date": "2026-01-06",
       "visitor": "FLA",
       "home": "TOR",
-      "score": null
+      "score": "1-4"
     },
     {
       "num": 43,
       "date": "2026-01-08",
       "visitor": "TOR",
       "home": "PHI",
-      "score": null
+      "score": "2-1"
     },
     {
       "num": 44,
@@ -615,35 +615,35 @@
       "date": "2026-01-12",
       "visitor": "TOR",
       "home": "COL",
-      "score": null
+      "score": "4-3"
     },
     {
       "num": 46,
       "date": "2026-01-13",
       "visitor": "TOR",
       "home": "UTA",
-      "score": null
+      "score": "1-6"
     },
     {
       "num": 47,
       "date": "2026-01-15",
       "visitor": "DAL",
       "home": "UTA",
-      "score": null
+      "score": "1-2"
     },
     {
       "num": 48,
       "date": "2026-01-17",
       "visitor": "SEA",
       "home": "UTA",
-      "score": null
+      "score": "3-6"
     },
     {
       "num": 49,
       "date": "2026-01-21",
       "visitor": "PHI",
       "home": "UTA",
-      "score": null
+      "score": "4-5"
     },
     {
       "num": 50,
@@ -664,42 +664,42 @@
       "date": "2026-01-29",
       "visitor": "WPG",
       "home": "TBL",
-      "score": null
+      "score": "1-4"
     },
     {
       "num": 53,
       "date": "2026-02-01",
       "visitor": "BOS",
       "home": "TBL",
-      "score": null
+      "score": "5-6"
     },
     {
       "num": 54,
       "date": "2026-02-03",
       "visitor": "BUF",
       "home": "TBL",
-      "score": null
+      "score": "3-4"
     },
     {
       "num": 55,
       "date": "2026-02-05",
       "visitor": "FLA",
       "home": "TBL",
-      "score": null
+      "score": "1-6"
     },
     {
       "num": 56,
       "date": "2026-02-25",
       "visitor": "TOR",
       "home": "TBL",
-      "score": null
+      "score": "2-4"
     },
     {
       "num": 57,
       "date": "2026-02-26",
       "visitor": "TBL",
       "home": "CAR",
-      "score": null
+      "score": "4-5"
     },
     {
       "num": 58,
@@ -713,21 +713,21 @@
       "date": "2026-03-02",
       "visitor": "CAR",
       "home": "SEA",
-      "score": null
+      "score": "1-2"
     },
     {
       "num": 60,
       "date": "2026-03-04",
       "visitor": "STL",
       "home": "SEA",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 61,
       "date": "2026-03-06",
       "visitor": "STL",
       "home": "SJS",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 62,
@@ -741,35 +741,35 @@
       "date": "2026-03-10",
       "visitor": "NYI",
       "home": "STL",
-      "score": null
+      "score": "4-3"
     },
     {
       "num": 64,
       "date": "2026-03-13",
       "visitor": "LAK",
       "home": "NYI",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 65,
       "date": "2026-03-14",
       "visitor": "LAK",
       "home": "NJD",
-      "score": null
+      "score": "4-6"
     },
     {
       "num": 66,
       "date": "2026-03-16",
       "visitor": "BOS",
       "home": "NJD",
-      "score": null
+      "score": "3-4"
     },
     {
       "num": 67,
       "date": "2026-03-18",
       "visitor": "NJD",
       "home": "NYR",
-      "score": null
+      "score": "6-3"
     },
     {
       "num": 68,
@@ -783,35 +783,35 @@
       "date": "2026-03-22",
       "visitor": "COL",
       "home": "WSH",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 70,
       "date": "2026-03-24",
       "visitor": "COL",
       "home": "PIT",
-      "score": null
+      "score": "6-2"
     },
     {
       "num": 71,
       "date": "2026-03-26",
       "visitor": "COL",
       "home": "WPG",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 72,
       "date": "2026-03-28",
       "visitor": "WPG",
       "home": "COL",
-      "score": null
+      "score": "4-2"
     },
     {
       "num": 73,
       "date": "2026-03-31",
       "visitor": "WPG",
       "home": "CHI",
-      "score": null
+      "score": "4-3"
     },
     {
       "num": 74,
@@ -832,14 +832,14 @@
       "date": "2026-04-05",
       "visitor": "STL",
       "home": "COL",
-      "score": null
+      "score": "3-2"
     },
     {
       "num": 77,
       "date": "2026-04-07",
       "visitor": "COL",
       "home": "STL",
-      "score": null
+      "score": "3-1"
     },
     {
       "num": 78,

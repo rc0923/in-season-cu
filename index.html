@@ -271,7 +271,7 @@
       <div class="log-num">${g.num}</div>
       <div class="log-date">${formatDate(g.date)}</div>
       <div class="log-team ${vChamp ? 'is-champ' : ''}">${g.visitor}</div>
-      <div class="log-at">@</div>
+      <div class="log-score">${g.score ?? '—'}</div>
       <div class="log-team ${hChamp ? 'is-champ' : ''}">${g.home}</div>
       <div class="log-owner">${owner}</div>
     `;
