@@ -60,7 +60,7 @@
 
     <!-- Today's Game -->
     <div class="today-box section">
-      <div class="section-label">Today's Matchup</div>
+      <div class="section-label">Next Game</div>
       <div id="today-content"><span class="loading-pulse">Checking NHL schedule...</span></div>
     </div>
 
@@ -312,17 +312,18 @@
         STATE.reachableTeams = computeReachableTeams(champ, futureGames);
         renderStandings();
 
-        if (!allGames.length) {
-          el.innerHTML = `<div class="no-game">No NHL games today.</div>`;
-          return;
-        }
-
-        const champGame = allGames.find(g =>
+        const champGames = allGames.filter(g =>
           g.awayTeam?.abbrev === champ || g.homeTeam?.abbrev === champ
         );
 
+        // Prefer a live game, then the next upcoming game (sorted by date)
+        const champGame =
+          champGames.find(g => g.gameState === 'LIVE' || g.gameState === 'CRIT') ??
+          champGames.filter(g => g.gameState === 'FUT' || g.gameState === 'PRE')
+            .sort((a, b) => a.date.localeCompare(b.date))[0];
+
         if (!champGame) {
-          el.innerHTML = `<div class="no-game">${teamName(champ)} is not playing today.</div>`;
+          el.innerHTML = `<div class="no-game">No upcoming games found for ${teamName(champ)}.</div>`;
           return;
         }
 
@@ -345,9 +346,12 @@
         const t = game.startTimeUTC
           ? new Date(game.startTimeUTC).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZoneName: 'short' })
           : 'TBD';
+        const dateLabel = game.date && game.date !== todayStr()
+          ? formatDate(game.date)
+          : 'Today';
         scoreHtml = `<div class="game-score">
       <div class="score" style="font-size:18px;color:var(--text-dim)">${t}</div>
-      <div class="status status-soon">Upcoming</div>
+      <div class="status status-soon">${dateLabel}</div>
     </div>`;
       } else if (state === 'LIVE' || state === 'CRIT') {
         const p = game.period ?? '?';
