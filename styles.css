@@ -433,7 +433,9 @@ header {
 
 @media (max-width: 600px) {
   .standings-cols, .player-row { grid-template-columns: 1fr repeat(3, 60px); }
+  .standings-cols span:nth-child(3),
   .standings-cols span:nth-child(5),
+  .player-row .player-stat:nth-child(3),
   .player-row .player-stat:nth-child(5) { display: none; }
   .log-entry { grid-template-columns: 28px 76px 1fr 18px 1fr; }
   .log-owner { display: none; }
