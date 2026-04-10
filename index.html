@@ -103,11 +103,34 @@
       WSH: 'Washington Capitals', WPG: 'Winnipeg Jets',
     };
 
-    // Teams that have been eliminated from cup contention this season
-    // The Action script manages this via the ❌ emoji in the sheet;
-    // for now we derive it from teams with zero days AND losses > 0 that never held the cup
-    // Simpler: just flag teams with no days and at least one loss
+    // Compute which teams can still mathematically win the cup via BFS through the future schedule.
+    // Starting from the current champion, any team that plays a reachable team (on a later date)
+    // is also reachable — because the reachable team could lose and hand them the cup.
+    function computeReachableTeams(champion, futureGames) {
+      const byDate = {};
+      for (const g of futureGames) {
+        (byDate[g.date] = byDate[g.date] ?? []).push(g);
+      }
+      const reachable = new Set([champion]);
+      for (const date of Object.keys(byDate).sort()) {
+        for (const game of byDate[date]) {
+          const away = game.awayTeam?.abbrev;
+          const home = game.homeTeam?.abbrev;
+          if (away && home && (reachable.has(away) || reachable.has(home))) {
+            reachable.add(away);
+            reachable.add(home);
+          }
+        }
+      }
+      return reachable;
+    }
+
+    // A team is eliminated if it cannot possibly receive the cup through any remaining game chain.
+    // Falls back to the old heuristic until the schedule has loaded.
     function isEliminated(teamStat) {
+      if (STATE?.reachableTeams) {
+        return !STATE.reachableTeams.has(teamStat.abbr);
+      }
       return teamStat.days === 0 && teamStat.reigns === 0;
     }
 
@@ -266,14 +289,27 @@
       try {
         const res = await fetch(`https://nhl-proxy.rc0923.workers.dev/schedule/${todayStr()}`);
         const data = await res.json();
-        const games = data?.gameWeek?.flatMap(w => w.games) ?? [];
 
-        if (!games.length) {
+        // Build a flat list of all games in the response with their dates attached
+        const allGames = [];
+        for (const day of data?.gameWeek ?? []) {
+          for (const game of day.games ?? []) {
+            allGames.push({ date: day.date, ...game });
+          }
+        }
+
+        // Compute which teams can still reach the cup and re-render standings
+        const futureGames = allGames.filter(g => g.gameState === 'FUT' || g.gameState === 'PRE');
+        STATE.reachableTeams = computeReachableTeams(champ, futureGames);
+        renderStandings();
+
+        const todayGames = allGames.filter(g => g.date === todayStr());
+        if (!todayGames.length) {
           el.innerHTML = `<div class="no-game">No NHL games today.</div>`;
           return;
         }
 
-        const champGame = games.find(g =>
+        const champGame = todayGames.find(g =>
           g.awayTeam?.abbrev === champ || g.homeTeam?.abbrev === champ
         );
 
