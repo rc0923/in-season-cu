@@ -172,6 +172,11 @@ async function main() {
 
   state.lastUpdated = today();
 
+  if (state.seasonEndDate && today() >= state.seasonEndDate) {
+    state.seasonOver = true;
+    console.log(`Season end date ${state.seasonEndDate} reached — marking seasonOver: true`);
+  }
+
   fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
   console.log(`state.json updated. New champion: ${state.champion}`);
 }

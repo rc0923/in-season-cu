@@ -110,12 +110,13 @@ async function askTeams(playerName, takenTeams) {
 
 // ── confirm summary ───────────────────────────────────────────────────────────
 
-async function confirmSummary(season, champion, players) {
+async function confirmSummary(season, seasonEndDate, champion, players) {
     blank();
     hr();
     console.log('  SUMMARY');
     hr();
     console.log(`  Season   : ${season}`);
+    console.log(`  End Date : ${seasonEndDate}`);
     console.log(`  Champion : ${champion} (${TEAM_NAMES[champion]})`);
     blank();
     players.forEach((p, i) => {
@@ -134,13 +135,15 @@ async function confirmSummary(season, champion, players) {
 
 // ── build state ───────────────────────────────────────────────────────────────
 
-function buildState(season, champion, players) {
+function buildState(season, seasonEndDate, champion, players) {
     const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 
     return {
         champion,
         lastUpdated: today,
         season,
+        seasonEndDate,
+        seasonOver: false,
         players: players.map(p => ({
             name: p.name,
             days: 0,
@@ -183,7 +186,7 @@ async function main() {
         }
     }
 
-    let season, champion, players;
+    let season, seasonEndDate, champion, players;
 
     // Outer loop — restart from scratch if user says NO at confirm
     while (true) {
@@ -191,6 +194,19 @@ async function main() {
 
         // ── Season ──
         season = await askRequired('  Season (e.g. 2026-27): ');
+
+        // ── Season end date ──
+        blank();
+        let seasonEndDate;
+        while (true) {
+            const raw = await ask('  Season end date (YYYY-MM-DD, last day of regular season): ');
+            if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
+                seasonEndDate = raw;
+                console.log(`  ✓  Season ends ${seasonEndDate}`);
+                break;
+            }
+            console.log('  ⚠  Enter a date in YYYY-MM-DD format (e.g. 2027-04-18).');
+        }
 
         // ── Starting champion ──
         blank();
@@ -232,7 +248,7 @@ async function main() {
         }
 
         // ── Confirm ──
-        const confirmed = await confirmSummary(season, champion, players);
+        const confirmed = await confirmSummary(season, seasonEndDate, champion, players);
         if (confirmed) break;
 
         console.log('\n  Starting over...\n');
@@ -246,7 +262,7 @@ async function main() {
     }
 
     // ── Write new state.json ──
-    const newState = buildState(season, champion, players);
+    const newState = buildState(season, seasonEndDate, champion, players);
     fs.writeFileSync(STATE_PATH, JSON.stringify(newState, null, 2));
 
     blank();

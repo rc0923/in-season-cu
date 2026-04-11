@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Season Summary · The ISC 2025-26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+
+/* ── PAGE OVERRIDES ── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.15s;
+  margin-bottom: 32px;
+  display: block;
+  padding-top: 32px;
+}
+.back-link:hover { color: var(--ice); }
+
+/* ── HERO ── */
+.summary-hero {
+  text-align: center;
+  padding: 48px 0 40px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 40px;
+}
+
+.summary-hero .eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.summary-hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(48px, 8vw, 80px);
+  letter-spacing: 3px;
+  line-height: 1;
+  color: var(--ice);
+}
+
+.summary-hero .sub {
+  font-size: 14px;
+  color: var(--text-dim);
+  margin-top: 10px;
+}
+
+.summary-hero .sub span { color: var(--gold); }
+
+/* ── SECTION TITLES ── */
+.section-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--ice);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.section-title .icon { font-size: 18px; }
+
+/* ── STAT CARDS ROW ── */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  animation: fadeIn 0.4s ease both;
+}
+
+.stat-card .big {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40px;
+  color: var(--gold);
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.stat-card .label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.stat-card .sub-label {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 6px;
+}
+
+.stat-card .sub-label strong { color: var(--ice); }
+
+/* ── FINAL STANDINGS TABLE ── */
+.summary-standings {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.ss-header {
+  display: grid;
+  grid-template-columns: 40px 1fr repeat(6, 70px);
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--line);
+  gap: 8px;
+}
+
+.ss-header span {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.ss-header span:first-child,
+.ss-header span:nth-child(2) { text-align: left; }
+
+.ss-row {
+  display: grid;
+  grid-template-columns: 40px 1fr repeat(6, 70px);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.4s ease both;
+}
+
+.ss-row:last-child { border-bottom: none; }
+
+.ss-rank {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--text-dim);
+}
+
+.ss-rank.gold   { color: #f5a623; }
+.ss-rank.silver { color: #a0b4c8; }
+.ss-rank.bronze { color: #cd7f32; }
+
+.ss-name { font-size: 16px; font-weight: 500; }
+
+.ss-stat {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  text-align: right;
+  color: var(--ice);
+}
+
+.ss-stat.hi { color: var(--gold); font-weight: 500; }
+
+/* ── TIMELINE ── */
+.timeline-wrap {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+  overflow-x: auto;
+}
+
+.timeline-track {
+  display: flex;
+  height: 52px;
+  border-radius: 6px;
+  overflow: hidden;
+  min-width: 600px;
+}
+
+.timeline-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 2px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.9);
+  overflow: hidden;
+  position: relative;
+  transition: filter 0.15s;
+  cursor: default;
+}
+
+.timeline-segment:hover { filter: brightness(1.15); }
+
+.timeline-segment .seg-team { font-size: 13px; font-weight: 700; }
+.timeline-segment .seg-days { font-size: 9px; opacity: 0.75; }
+
+/* Player colors */
+.owner-tyler   { background: #1a6b9e; }
+.owner-justin  { background: #7b3f9e; }
+.owner-brendan { background: #1e7e5a; }
+.owner-rob     { background: #9e4a1a; }
+/* fallback */
+.owner-unknown { background: #3a4a5a; }
+
+.timeline-legend {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+
+/* ── REIGN LOG ── */
+.reign-log {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+.reign-row {
+  display: grid;
+  grid-template-columns: 52px 90px 1fr 80px 70px 70px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  animation: fadeIn 0.4s ease both;
+}
+
+.reign-row:last-child { border-bottom: none; }
+.reign-row.header-row {
+  padding: 8px 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.reign-row.header-row span {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.reign-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.reign-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.reign-team { font-weight: 500; }
+.reign-owner { font-size: 12px; color: var(--text-dim); }
+
+.reign-days {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  text-align: right;
+}
+
+.reign-defended {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  text-align: right;
+  color: var(--text-dim);
+}
+
+.reign-lost {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  text-align: right;
+  color: var(--text-dim);
+}
+
+/* ── PLAYER BREAKDOWN ── */
+.player-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.player-card {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease both;
+}
+
+.player-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.player-card-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 2px;
+}
+
+.player-card-total {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.player-card-total strong {
+  display: block;
+  font-size: 18px;
+  color: var(--gold);
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 1px;
+}
+
+.team-stat-row {
+  display: grid;
+  grid-template-columns: 44px 1fr repeat(4, 48px);
+  padding: 9px 20px;
+  border-bottom: 1px solid var(--line);
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.team-stat-row:last-child { border-bottom: none; }
+
+.team-stat-row.col-headers {
+  padding: 6px 20px;
+}
+
+.team-stat-row.col-headers span {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  text-align: right;
+}
+
+.team-stat-row.col-headers span:nth-child(2) { text-align: left; }
+
+.team-abbr {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.team-abbr.is-champ { color: var(--gold); }
+
+.team-full-name { font-size: 11px; color: var(--text-dim); }
+
+.ts {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  text-align: right;
+  color: var(--text-dim);
+}
+
+.ts.active { color: var(--ice); }
+.ts.best { color: var(--gold); }
+
+/* ── RECORDS / AWARDS ── */
+.awards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 40px;
+}
+
+.award-card {
+  background: var(--rink-mid);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  animation: fadeIn 0.4s ease both;
+}
+
+.award-icon { font-size: 24px; margin-bottom: 8px; }
+
+.award-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.award-winner {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1px;
+  color: var(--gold);
+  line-height: 1;
+}
+
+.award-detail {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-top: 4px;
+}
+
+/* Animation delays for stagger */
+.stat-card:nth-child(1) { animation-delay: 0.05s; }
+.stat-card:nth-child(2) { animation-delay: 0.1s; }
+.stat-card:nth-child(3) { animation-delay: 0.15s; }
+.stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+.ss-row:nth-child(2) { animation-delay: 0.05s; }
+.ss-row:nth-child(3) { animation-delay: 0.1s; }
+.ss-row:nth-child(4) { animation-delay: 0.15s; }
+.ss-row:nth-child(5) { animation-delay: 0.2s; }
+
+.award-card:nth-child(1) { animation-delay: 0.05s; }
+.award-card:nth-child(2) { animation-delay: 0.1s; }
+.award-card:nth-child(3) { animation-delay: 0.15s; }
+.award-card:nth-child(4) { animation-delay: 0.2s; }
+.award-card:nth-child(5) { animation-delay: 0.25s; }
+.award-card:nth-child(6) { animation-delay: 0.3s; }
+
+@media (max-width: 700px) {
+  .stat-cards { grid-template-columns: repeat(2, 1fr); }
+  .awards { grid-template-columns: repeat(2, 1fr); }
+  .player-cards { grid-template-columns: 1fr; }
+  .ss-header, .ss-row { grid-template-columns: 32px 1fr repeat(3, 56px); }
+  .ss-header span:nth-child(5),
+  .ss-header span:nth-child(7),
+  .ss-row .ss-stat:nth-child(6),
+  .ss-row .ss-stat:nth-child(8) { display: none; }
+  .reign-row { grid-template-columns: 40px 80px 1fr 60px; }
+  .reign-row .reign-days,
+  .reign-row .reign-lost { display: none; }
+  .team-stat-row { grid-template-columns: 44px 1fr repeat(3, 44px); }
+  .team-stat-row span:nth-child(6) { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a href="index.html" class="back-link">← Back to live tracker</a>
+
+  <div class="summary-hero section">
+    <div class="eyebrow">Season in Review</div>
+    <h1 id="hero-title">2025–26</h1>
+    <div class="sub">In Season Cup · <span id="hero-games">—</span> games · <span id="hero-transfers">—</span> cup transfers</div>
+  </div>
+
+  <!-- Quick stat cards -->
+  <div class="stat-cards" id="stat-cards"></div>
+
+  <!-- Final Standings -->
+  <div class="section-title section"><span class="icon">📊</span> Final Standings</div>
+  <div class="summary-standings section">
+    <div class="ss-header">
+      <span>#</span>
+      <span>Player</span>
+      <span>Days</span>
+      <span>Reigns</span>
+      <span>W</span>
+      <span>L</span>
+      <span>W%</span>
+      <span>Streak</span>
+    </div>
+    <div id="standings-body"></div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section-title section"><span class="icon">📅</span> Cup Timeline</div>
+  <div class="timeline-wrap section">
+    <div class="timeline-track" id="timeline-track"></div>
+    <div class="timeline-legend" id="timeline-legend"></div>
+  </div>
+
+  <!-- Reign Log -->
+  <div class="section-title section"><span class="icon">📜</span> Reign History</div>
+  <div class="reign-log section">
+    <div class="reign-row header-row">
+      <span>#</span>
+      <span>Won</span>
+      <span>Team · Owner</span>
+      <span style="text-align:right">Days</span>
+      <span style="text-align:right">Def.</span>
+      <span style="text-align:right">Lost To</span>
+    </div>
+    <div id="reign-body"></div>
+  </div>
+
+  <!-- Awards -->
+  <div class="section-title section"><span class="icon">🏅</span> Season Awards</div>
+  <div class="awards section" id="awards"></div>
+
+  <!-- Player Breakdowns -->
+  <div class="section-title section"><span class="icon">👤</span> Player Breakdown</div>
+  <div class="player-cards" id="player-cards"></div>
+
+</div>
+
+<script>
+const TEAM_NAMES = {
+  ANA:'Anaheim Ducks', BOS:'Boston Bruins', BUF:'Buffalo Sabres',
+  CGY:'Calgary Flames', CAR:'Carolina Hurricanes', CHI:'Chicago Blackhawks',
+  COL:'Colorado Avalanche', CBJ:'Columbus Blue Jackets', DAL:'Dallas Stars',
+  DET:'Detroit Red Wings', EDM:'Edmonton Oilers', FLA:'Florida Panthers',
+  LAK:'Los Angeles Kings', MIN:'Minnesota Wild', MTL:'Montreal Canadiens',
+  NSH:'Nashville Predators', NJD:'New Jersey Devils', NYI:'New York Islanders',
+  NYR:'New York Rangers', OTT:'Ottawa Senators', PHI:'Philadelphia Flyers',
+  PIT:'Pittsburgh Penguins', SJS:'San Jose Sharks', SEA:'Seattle Kraken',
+  STL:'St. Louis Blues', TBL:'Tampa Bay Lightning', TOR:'Toronto Maple Leafs',
+  UTA:'Utah Mammoth', VAN:'Vancouver Canucks', VGK:'Vegas Golden Knights',
+  WSH:'Washington Capitals', WPG:'Winnipeg Jets',
+};
+
+// Assign a color class per player (index-based, consistent)
+const PLAYER_COLORS = ['owner-tyler','owner-justin','owner-brendan','owner-rob',
+                       'owner-unknown','owner-unknown','owner-unknown','owner-unknown'];
+
+let STATE = null;
+let playerColorMap = {};  // name → css class
+
+// ── helpers ──────────────────────────────────────────────────────────────────
+
+function tn(abbr) { return TEAM_NAMES[abbr] ?? abbr; }
+
+function fmtDate(str) {
+  return new Date(str + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function daysBetween(a, b) {
+  return Math.round((new Date(b) - new Date(a)) / 86400000);
+}
+
+function ownerOf(abbr) {
+  return STATE.players.find(p => p.teams.some(t => t.abbr === abbr))?.name ?? '?';
+}
+
+// ── derive reigns from game log ───────────────────────────────────────────────
+
+function buildReigns() {
+  if (!STATE.gameLog.length) return [];
+
+  // Determine the initial champion from the first game's home team
+  let champion = STATE.gameLog[0].home;
+  const reigns = [];
+  let reignStart = STATE.gameLog[0].date;
+  let defended = 0;
+
+  for (const g of STATE.gameLog) {
+    const champIsHome = g.home === champion;
+    const opp = champIsHome ? g.visitor : g.home;
+    let champWon = true;
+
+    if (g.score) {
+      const [v, h] = g.score.split('-').map(Number);
+      const champScore = champIsHome ? h : v;
+      const oppScore   = champIsHome ? v : h;
+      champWon = champScore > oppScore;
+    }
+
+    if (!champWon) {
+      reigns.push({
+        team: champion, owner: ownerOf(champion),
+        start: reignStart, end: g.date,
+        days: daysBetween(reignStart, g.date),
+        defended, lostTo: opp,
+      });
+      champion = opp;
+      reignStart = g.date;
+      defended = 0;
+    } else {
+      defended++;
+    }
+  }
+
+  // Current / final reign
+  reigns.push({
+    team: champion, owner: ownerOf(champion),
+    start: reignStart, end: STATE.lastUpdated,
+    days: daysBetween(reignStart, STATE.lastUpdated),
+    defended, lostTo: null,
+  });
+
+  return reigns;
+}
+
+// ── render hero ───────────────────────────────────────────────────────────────
+
+function renderHero(reigns) {
+  const season = STATE.season.replace('-', '–');
+  document.getElementById('hero-title').textContent = season;
+  document.getElementById('hero-games').textContent = STATE.gameLog.length + ' games';
+  const transfers = reigns.filter(r => r.lostTo).length;
+  document.getElementById('hero-transfers').textContent = transfers;
+}
+
+// ── render quick stats ────────────────────────────────────────────────────────
+
+function renderStatCards(reigns) {
+  const totalDays = STATE.players.reduce((s, p) => s + p.days, 0);
+  const longestReign = [...reigns].sort((a,b) => b.days - a.days)[0];
+  const mostWins = [...STATE.players].sort((a,b) => b.wins - a.wins)[0];
+  const bestStreak = [...STATE.players].sort((a,b) => b.streak - a.streak)[0];
+
+  const cards = [
+    { big: STATE.gameLog.length, label: 'Total Games', sub: `Season ${STATE.season}` },
+    { big: reigns.filter(r => r.lostTo).length, label: 'Cup Transfers', sub: `${reigns.length} total reigns` },
+    { big: longestReign.days, label: 'Longest Reign', sub: `<strong>${longestReign.team}</strong> (${longestReign.owner})` },
+    { big: bestStreak.streak, label: 'Best Streak', sub: `<strong>${bestStreak.name}</strong>` },
+  ];
+
+  const el = document.getElementById('stat-cards');
+  cards.forEach(c => {
+    const d = document.createElement('div');
+    d.className = 'stat-card';
+    d.innerHTML = `
+      <div class="big">${c.big}</div>
+      <div class="label">${c.label}</div>
+      <div class="sub-label">${c.sub}</div>
+    `;
+    el.appendChild(d);
+  });
+}
+
+// ── render standings ──────────────────────────────────────────────────────────
+
+function renderStandings() {
+  const sorted = [...STATE.players].sort((a,b) => b.days - a.days || b.wins - a.wins);
+  const maxDays = Math.max(...sorted.map(p => p.days));
+  const maxWins = Math.max(...sorted.map(p => p.wins));
+  const maxStreak = Math.max(...sorted.map(p => p.streak));
+  const rankClasses = ['gold','silver','bronze',''];
+  const rankSymbols = ['1','2','3','4'];
+
+  const body = document.getElementById('standings-body');
+  sorted.forEach((p, i) => {
+    const pct = p.wins + p.losses > 0
+      ? Math.round(p.wins / (p.wins + p.losses) * 100) + '%'
+      : '—';
+    const isChamp = p.teams.some(t => t.abbr === STATE.champion);
+    const row = document.createElement('div');
+    row.className = 'ss-row';
+    row.style.animationDelay = `${(i + 1) * 0.05}s`;
+    row.innerHTML = `
+      <div class="ss-rank ${rankClasses[i]}">${rankSymbols[i]}</div>
+      <div class="ss-name">${p.name}${isChamp ? ' 🏆' : ''}</div>
+      <div class="ss-stat ${p.days === maxDays ? 'hi' : ''}">${p.days}</div>
+      <div class="ss-stat">${p.reigns}</div>
+      <div class="ss-stat ${p.wins === maxWins ? 'hi' : ''}">${p.wins}</div>
+      <div class="ss-stat">${p.losses}</div>
+      <div class="ss-stat">${pct}</div>
+      <div class="ss-stat ${p.streak === maxStreak ? 'hi' : ''}">${p.streak}</div>
+    `;
+    body.appendChild(row);
+  });
+}
+
+// ── render timeline ───────────────────────────────────────────────────────────
+
+function renderTimeline(reigns) {
+  const track = document.getElementById('timeline-track');
+  const legend = document.getElementById('timeline-legend');
+
+  const totalDays = reigns.reduce((s, r) => s + r.days, 0) || 1;
+
+  // Build legend (unique owners)
+  const seen = new Set();
+  reigns.forEach(r => {
+    if (!seen.has(r.owner)) {
+      seen.add(r.owner);
+      const colorClass = playerColorMap[r.owner] ?? 'owner-unknown';
+      const item = document.createElement('div');
+      item.className = 'legend-item';
+      item.innerHTML = `<span class="legend-dot ${colorClass}"></span>${r.owner}`;
+      legend.appendChild(item);
+    }
+  });
+
+  reigns.forEach(r => {
+    const pct = (r.days / totalDays * 100).toFixed(2);
+    const colorClass = playerColorMap[r.owner] ?? 'owner-unknown';
+    const seg = document.createElement('div');
+    seg.className = `timeline-segment ${colorClass}`;
+    seg.style.width = `${pct}%`;
+    seg.title = `${r.team} (${r.owner}) · ${r.days} days · ${fmtDate(r.start)}`;
+    if (r.days / totalDays > 0.07) {
+      seg.innerHTML = `<span class="seg-team">${r.team}</span><span class="seg-days">${r.days}d</span>`;
+    }
+    track.appendChild(seg);
+  });
+}
+
+// ── render reign log ──────────────────────────────────────────────────────────
+
+function renderReignLog(reigns) {
+  const body = document.getElementById('reign-body');
+  reigns.forEach((r, i) => {
+    const row = document.createElement('div');
+    row.className = 'reign-row';
+    row.style.animationDelay = `${i * 0.03}s`;
+    row.innerHTML = `
+      <div class="reign-num">#${i + 1}</div>
+      <div class="reign-date">${fmtDate(r.start)}</div>
+      <div>
+        <div class="reign-team">${r.team}</div>
+        <div class="reign-owner">${r.owner}</div>
+      </div>
+      <div class="reign-days">${r.days}d</div>
+      <div class="reign-defended">${r.defended}</div>
+      <div class="reign-lost">${r.lostTo ?? '👑 Current'}</div>
+    `;
+    body.appendChild(row);
+  });
+}
+
+// ── render awards ─────────────────────────────────────────────────────────────
+
+function renderAwards(reigns) {
+  const sorted = [...STATE.players].sort((a,b) => b.days - a.days);
+
+  const longestReign  = [...reigns].sort((a,b) => b.days - a.days)[0];
+  const mostTransfers = (() => {
+    const counts = {};
+    reigns.filter(r => r.lostTo).forEach(r => {
+      counts[r.lostTo] = (counts[r.lostTo] ?? 0) + 1;
+    });
+    const top = Object.entries(counts).sort((a,b) => b[1] - a[1])[0];
+    return top ? { team: top[0], count: top[1], owner: ownerOf(top[0]) } : null;
+  })();
+
+  const longestDefense = [...reigns].sort((a,b) => b.defended - a.defended)[0];
+
+  const awards = [
+    {
+      icon: '👑',
+      title: 'Cup Leader',
+      winner: sorted[0].name,
+      detail: `${sorted[0].days} total days held`,
+    },
+    {
+      icon: '🔥',
+      title: 'Longest Single Reign',
+      winner: `${longestReign.team}`,
+      detail: `${longestReign.days} days (${longestReign.owner})`,
+    },
+    {
+      icon: '🛡️',
+      title: 'Best Defense',
+      winner: `${longestDefense.team}`,
+      detail: `${longestDefense.defended} consecutive defenses (${longestDefense.owner})`,
+    },
+    {
+      icon: '⚔️',
+      title: 'Most Conquests',
+      winner: mostTransfers ? mostTransfers.team : '—',
+      detail: mostTransfers ? `Won cup ${mostTransfers.count}x (${mostTransfers.owner})` : '—',
+    },
+    {
+      icon: '📈',
+      title: 'Most Wins',
+      winner: [...STATE.players].sort((a,b) => b.wins - a.wins)[0].name,
+      detail: `${[...STATE.players].sort((a,b) => b.wins - a.wins)[0].wins} wins`,
+    },
+    {
+      icon: '⚡',
+      title: 'Longest Streak',
+      winner: [...STATE.players].sort((a,b) => b.streak - a.streak)[0].name,
+      detail: `${[...STATE.players].sort((a,b) => b.streak - a.streak)[0].streak} game streak`,
+    },
+  ];
+
+  const el = document.getElementById('awards');
+  awards.forEach((a, i) => {
+    const card = document.createElement('div');
+    card.className = 'award-card';
+    card.style.animationDelay = `${i * 0.05}s`;
+    card.innerHTML = `
+      <div class="award-icon">${a.icon}</div>
+      <div class="award-title">${a.title}</div>
+      <div class="award-winner">${a.winner}</div>
+      <div class="award-detail">${a.detail}</div>
+    `;
+    el.appendChild(card);
+  });
+}
+
+// ── render player cards ───────────────────────────────────────────────────────
+
+function renderPlayerCards() {
+  const sorted = [...STATE.players].sort((a,b) => b.days - a.days);
+  const el = document.getElementById('player-cards');
+
+  sorted.forEach((p, i) => {
+    const pct = p.wins + p.losses > 0
+      ? Math.round(p.wins / (p.wins + p.losses) * 100) + '%'
+      : '—';
+
+    const card = document.createElement('div');
+    card.className = 'player-card';
+    card.style.animationDelay = `${i * 0.05}s`;
+
+    const teamsHtml = p.teams.map(t => {
+      const isChamp = t.abbr === STATE.champion;
+      const hasStats = t.days > 0 || t.wins > 0;
+      return `
+        <div class="team-stat-row">
+          <span class="team-abbr${isChamp ? ' is-champ' : ''}">${t.abbr}${isChamp ? ' 🏆' : ''}</span>
+          <span class="team-full-name">${tn(t.abbr)}</span>
+          <span class="ts ${t.days > 0 ? 'active' : ''}">${t.days || '—'}</span>
+          <span class="ts ${t.wins > 0 ? 'active' : ''}">${t.wins || '—'}</span>
+          <span class="ts">${t.losses || '—'}</span>
+          <span class="ts ${t.longestStreak > 0 ? 'best' : ''}">${t.longestStreak || '—'}</span>
+        </div>
+      `;
+    }).join('');
+
+    card.innerHTML = `
+      <div class="player-card-header">
+        <div class="player-card-name">${p.name}</div>
+        <div class="player-card-total">
+          <strong>${p.days}</strong>
+          days · ${p.reigns}R · ${p.wins}W-${p.losses}L · ${pct}
+        </div>
+      </div>
+      <div class="team-stat-row col-headers">
+        <span>Team</span>
+        <span></span>
+        <span>Days</span>
+        <span>W</span>
+        <span>L</span>
+        <span>Best</span>
+      </div>
+      ${teamsHtml}
+    `;
+    el.appendChild(card);
+  });
+}
+
+// ── boot ──────────────────────────────────────────────────────────────────────
+
+async function init() {
+  try {
+    const res = await fetch('state.json?bust=' + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    STATE = await res.json();
+  } catch (e) {
+    document.body.innerHTML = `<div style="padding:40px;color:#e63946;font-family:monospace">
+      Could not load state.json: ${e.message}</div>`;
+    return;
+  }
+
+  if (!STATE.seasonOver) {
+    window.location.replace('index.html');
+    return;
+  }
+
+  // Build player color map in standings order
+  const sorted = [...STATE.players].sort((a,b) => b.days - a.days);
+  sorted.forEach((p, i) => {
+    playerColorMap[p.name] = PLAYER_COLORS[i] ?? 'owner-unknown';
+  });
+
+  const reigns = buildReigns();
+
+  renderHero(reigns);
+  renderStatCards(reigns);
+  renderStandings();
+  renderTimeline(reigns);
+  renderReignLog(reigns);
+  renderAwards(reigns);
+  renderPlayerCards();
+}
+
+init();
+</script>
+</body>
+</html>

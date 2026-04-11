@@ -2,6 +2,8 @@
   "champion": "COL",
   "lastUpdated": "2026-04-09",
   "season": "2025-26",
+  "seasonEndDate": "2026-04-16",
+  "seasonOver": false,
   "players": [
     {
       "name": "Tyler",

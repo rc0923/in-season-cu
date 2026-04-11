@@ -25,13 +25,22 @@
         <h1>The In-Season CUPM</h1>
         <div class="subtitle">In Season Stanley Cup · 2025–26</div>
       </div>
-      <div class="updated-badge">
-        Last updated
-        <span id="last-updated">—</span>
+      <div class="header-right">
+        <a href="summary.html" class="summary-link" id="summary-link" style="display:none">Season Summary →</a>
+        <div class="updated-badge">
+          Last updated
+          <span id="last-updated">—</span>
+        </div>
       </div>
     </header>
 
     <div id="error-area"></div>
+
+    <!-- Season Over Banner -->
+    <a href="summary.html" class="season-over-banner" id="season-over-banner" style="display:none">
+      <div class="sob-label">The Season Is Over</div>
+      <div class="sob-cta">View Season Summary →</div>
+    </a>
 
     <!-- Champion Hero -->
     <div class="champion-hero section">
@@ -167,7 +176,7 @@
       return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
     }
 
-    function todayStr() { return new Date().toISOString().slice(0, 10); }
+    function todayStr() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
 
     // ── render champion ──────────────────────────────────────────────────────────
 
@@ -182,6 +191,10 @@
       document.getElementById('champ-wins').textContent = owner?.wins ?? '—';
       document.getElementById('champ-streak').textContent = owner?.streak ?? '—';
       document.getElementById('last-updated').textContent = formatDate(STATE.lastUpdated);
+      if (STATE.seasonOver) {
+        document.getElementById('summary-link').style.display = '';
+        document.getElementById('season-over-banner').style.display = '';
+      }
     }
 
     // ── render standings ─────────────────────────────────────────────────────────
