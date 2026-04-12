@@ -367,7 +367,7 @@
       <div class="status status-soon">${dateLabel}</div>
     </div>`;
       } else if (state === 'LIVE' || state === 'CRIT') {
-        const p = game.period ?? '?';
+        const p = game.periodDescriptor?.number ?? '?';
         const c = game.clock?.timeRemaining ?? '';
         scoreHtml = `<div class="game-score">
       <div class="score">${away.score ?? 0} – ${home.score ?? 0}</div>
