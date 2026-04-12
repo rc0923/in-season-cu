@@ -1,16 +1,16 @@
 {
-  "champion": "COL",
-  "lastUpdated": "2026-04-09",
+  "champion": "VGK",
+  "lastUpdated": "2026-04-11",
   "season": "2025-26",
   "seasonEndDate": "2026-04-16",
   "seasonOver": false,
   "players": [
     {
       "name": "Tyler",
-      "days": 61,
+      "days": 62,
       "reigns": 13,
       "wins": 31,
-      "losses": 23,
+      "losses": 24,
       "streak": 21,
       "teams": [
         {
@@ -23,12 +23,12 @@
         },
         {
           "abbr": "COL",
-          "days": 31,
+          "days": 32,
           "reigns": 4,
           "wins": 16,
-          "losses": 5,
+          "losses": 6,
           "longestStreak": 21,
-          "currentStreak": 1
+          "currentStreak": 0
         },
         {
           "abbr": "LAK",
@@ -157,7 +157,7 @@
     {
       "name": "Brendan",
       "days": 32,
-      "reigns": 6,
+      "reigns": 7,
       "wins": 14,
       "losses": 19,
       "streak": 12,
@@ -165,10 +165,11 @@
         {
           "abbr": "VGK",
           "days": 0,
-          "reigns": 0,
+          "reigns": 1,
           "wins": 0,
           "losses": 1,
-          "longestStreak": 0
+          "longestStreak": 0,
+          "currentStreak": 1
         },
         {
           "abbr": "TBL",
@@ -850,6 +851,14 @@
       "home": "COL",
       "score": "1-3",
       "nhlGameId": "2025021256"
+    },
+    {
+      "num": 79,
+      "date": "2026-04-11",
+      "visitor": "VGK",
+      "home": "COL",
+      "score": "3-2",
+      "nhlGameId": "2025021274"
     }
   ]
 }
