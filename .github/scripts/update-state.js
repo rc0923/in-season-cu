@@ -40,6 +40,12 @@ function today() {
   return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
 }
 
+function daysBetween(fromDate, toDate) {
+  const from = new Date(fromDate + 'T00:00:00Z');
+  const to = new Date(toDate + 'T00:00:00Z');
+  return Math.max(0, Math.round((to - from) / (1000 * 60 * 60 * 24)));
+}
+
 function ownerOf(state, abbr) {
   return state.players.find(p => p.teams.some(t => t.abbr === abbr)) ?? null;
 }
@@ -57,6 +63,22 @@ async function main() {
 
   console.log(`Current champion: ${champion}`);
   console.log(`Checking schedule for today: ${today()}`);
+
+  // ── Daily calendar-day tick ───────────────────────────────────────────────
+  // Increment the champion's days for every calendar day since the last tick,
+  // regardless of whether there is a game today.
+  const lastTick = state.lastDayTick ?? state.lastUpdated;
+  const dayDelta = daysBetween(lastTick, today());
+  if (dayDelta > 0) {
+    console.log(`Ticking ${dayDelta} calendar day(s) for ${champion} (${lastTick} → ${today()})`);
+    const tickOwner = ownerOf(state, champion);
+    if (tickOwner) {
+      const tickTeamStat = teamStatOf(tickOwner, champion);
+      if (tickTeamStat) tickTeamStat.days += dayDelta;
+      tickOwner.days += dayDelta;
+    }
+    state.lastDayTick = today();
+  }
 
   // Fetch today's schedule
   let schedule;
@@ -78,7 +100,11 @@ async function main() {
   });
 
   if (!champGame) {
-    console.log(`No final game found for ${champion} today. Nothing to update.`);
+    console.log(`No final game found for ${champion} today.`);
+    if (dayDelta > 0) {
+      fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
+      console.log(`state.json updated with ${dayDelta} calendar day(s).`);
+    }
     process.exit(0);
   }
 
@@ -87,7 +113,11 @@ async function main() {
   // Check if we already logged this game (by NHL game id stored in a field)
   const alreadyLoggedById = state.gameLog.some(g => g.nhlGameId === gameId);
   if (alreadyLoggedById) {
-    console.log(`Game ${gameId} already logged. Nothing to do.`);
+    console.log(`Game ${gameId} already logged.`);
+    if (dayDelta > 0) {
+      fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
+      console.log(`state.json updated with ${dayDelta} calendar day(s).`);
+    }
     process.exit(0);
   }
 
@@ -126,11 +156,9 @@ async function main() {
   if (champOwner) {
     const champTeamStat = teamStatOf(champOwner, champion);
     if (champTeamStat) {
-      champTeamStat.days += 1;
       if (champWon) {
         champTeamStat.wins += 1;
         champOwner.wins += 1;
-        champOwner.days += 1;
         // streak is tracked on the team level as current streak
         // longestStreak is the record
         champTeamStat.currentStreak = (champTeamStat.currentStreak ?? 0) + 1;
@@ -143,7 +171,6 @@ async function main() {
       } else {
         champTeamStat.losses += 1;
         champOwner.losses += 1;
-        champOwner.days += 1;
         champTeamStat.currentStreak = 0;
       }
     }
