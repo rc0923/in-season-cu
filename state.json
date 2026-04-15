@@ -1,7 +1,7 @@
 {
   "champion": "VGK",
   "lastUpdated": "2026-04-13",
-  "lastDayTick": "2026-04-14",
+  "lastDayTick": "2026-04-15",
   "season": "2025-26",
   "seasonEndDate": "2026-04-16",
   "seasonOver": false,
@@ -157,7 +157,7 @@
     },
     {
       "name": "Brendan",
-      "days": 35,
+      "days": 36,
       "reigns": 7,
       "wins": 15,
       "losses": 19,
@@ -165,7 +165,7 @@
       "teams": [
         {
           "abbr": "VGK",
-          "days": 3,
+          "days": 4,
           "reigns": 1,
           "wins": 1,
           "losses": 1,
