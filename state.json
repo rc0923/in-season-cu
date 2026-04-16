@@ -1,7 +1,7 @@
 {
   "champion": "VGK",
-  "lastUpdated": "2026-04-13",
-  "lastDayTick": "2026-04-15",
+  "lastUpdated": "2026-04-15",
+  "lastDayTick": "2026-04-16",
   "season": "2025-26",
   "seasonEndDate": "2026-04-16",
   "seasonOver": false,
@@ -157,20 +157,20 @@
     },
     {
       "name": "Brendan",
-      "days": 36,
+      "days": 37,
       "reigns": 7,
-      "wins": 15,
+      "wins": 16,
       "losses": 19,
       "streak": 12,
       "teams": [
         {
           "abbr": "VGK",
-          "days": 4,
+          "days": 5,
           "reigns": 1,
-          "wins": 1,
+          "wins": 2,
           "losses": 1,
-          "longestStreak": 2,
-          "currentStreak": 2
+          "longestStreak": 3,
+          "currentStreak": 3
         },
         {
           "abbr": "TBL",
@@ -868,6 +868,14 @@
       "home": "VGK",
       "score": "2-6",
       "nhlGameId": "2025021290"
+    },
+    {
+      "num": 81,
+      "date": "2026-04-15",
+      "visitor": "SEA",
+      "home": "VGK",
+      "score": "1-4",
+      "nhlGameId": "2025021306"
     }
   ]
 }
