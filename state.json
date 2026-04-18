@@ -1,10 +1,10 @@
 {
   "champion": "VGK",
-  "lastUpdated": "2026-04-15",
+  "lastUpdated": "2026-04-18",
   "lastDayTick": "2026-04-18",
   "season": "2025-26",
   "seasonEndDate": "2026-04-16",
-  "seasonOver": false,
+  "seasonOver": true,
   "players": [
     {
       "name": "Tyler",

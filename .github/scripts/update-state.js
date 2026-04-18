@@ -66,10 +66,10 @@ async function main() {
 
   // ── Daily calendar-day tick ───────────────────────────────────────────────
   // Increment the champion's days for every calendar day since the last tick,
-  // regardless of whether there is a game today.
+  // but only during the active season (not after seasonOver).
   const lastTick = state.lastDayTick ?? state.lastUpdated;
   const dayDelta = daysBetween(lastTick, today());
-  if (dayDelta > 0) {
+  if (dayDelta > 0 && !state.seasonOver) {
     console.log(`Ticking ${dayDelta} calendar day(s) for ${champion} (${lastTick} → ${today()})`);
     const tickOwner = ownerOf(state, champion);
     if (tickOwner) {
@@ -78,6 +78,21 @@ async function main() {
       tickOwner.days += dayDelta;
     }
     state.lastDayTick = today();
+  }
+
+  // ── Season-end check (runs regardless of whether a game was found) ────────
+  if (state.seasonEndDate && today() >= state.seasonEndDate && !state.seasonOver) {
+    state.seasonOver = true;
+    state.lastUpdated = today();
+    console.log(`Season end date ${state.seasonEndDate} reached — marking seasonOver: true`);
+    fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
+    console.log('state.json updated (season over).');
+    process.exit(0);
+  }
+
+  if (state.seasonOver) {
+    console.log('Season is over — skipping game fetch.');
+    process.exit(0);
   }
 
   // Fetch today's schedule
