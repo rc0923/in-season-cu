@@ -32,6 +32,9 @@ const ALLOWED_CAPACITIES = [2, 4, 8];
 const BOT_DELAY_MS = 1400;
 const isPracticeRoom = (room) => /^practice/i.test(room ?? '');
 
+// A socket that keeps guessing the password gets dropped.
+const MAX_AUTH_ATTEMPTS = 6;
+
 function corsHeaders(request, env) {
   const origin = request.headers.get('Origin') ?? '';
   const allowed = (env.ALLOWED_ORIGINS ?? '')
@@ -40,7 +43,7 @@ function corsHeaders(request, env) {
   return {
     'Access-Control-Allow-Origin': ok ? origin : (allowed[0] ?? '*'),
     'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token',
+    'Access-Control-Allow-Headers': 'Content-Type, X-Admin-Token, X-Draft-Password',
     'Vary': 'Origin',
   };
 }
@@ -149,6 +152,43 @@ export class DraftRoom extends DurableObject {
 
   async save(s) { await this.ctx.storage.put('state', s); }
 
+  // -- authentication --------------------------------------------------------
+
+  /**
+   * Which role a password earns, or null to refuse. The comparison happens here
+   * rather than in the page: the WebSocket is public, so a client-side check
+   * would be bypassed by talking to the room directly.
+   *
+   * Practice rooms are open so a rehearsal needs no password, but the admin
+   * password still works there so admin controls can be rehearsed too.
+   */
+  async roleFor(s, password, adminOnly = false) {
+    const pw = String(password ?? '');
+    if (this.env.ADMIN_PASSWORD && await secretsMatch(pw, this.env.ADMIN_PASSWORD)) return 'admin';
+    // Someone deliberately reaching for admin must produce the admin password.
+    // Without this, the open-practice-room fallback below would quietly hand
+    // back "player" and read as success.
+    if (adminOnly) return null;
+    if (this.env.DRAFT_PASSWORD && await secretsMatch(pw, this.env.DRAFT_PASSWORD)) return 'player';
+    if (s.practice) return 'player';
+    return null;
+  }
+
+  /** Whether a real draft room can be entered at all. Fails closed. */
+  passwordsConfigured() {
+    return Boolean(this.env.DRAFT_PASSWORD || this.env.ADMIN_PASSWORD);
+  }
+
+  // Socket role lives on the connection's attachment so it survives hibernation.
+  setSocketRole(ws, role, attempts) {
+    try { ws.serializeAttachment({ role: role ?? null, attempts: attempts ?? 0 }); } catch {}
+  }
+  socketInfo(ws) {
+    try { return ws.deserializeAttachment() ?? { role: null, attempts: 0 }; }
+    catch { return { role: null, attempts: 0 }; }
+  }
+  socketRole(ws) { return this.socketInfo(ws).role; }
+
   /** A Durable Object is not told its own name, so learn it from the first request. */
   async ensureRoom(s, roomName) {
     if (s.room === roomName) return s;
@@ -187,7 +227,7 @@ export class DraftRoom extends DurableObject {
       seasonStart: s.seasonStart,
       seasonEnd: s.seasonEnd,
       startChampion: s.startChampion,
-      players: s.players.map(p => ({ id: p.id, name: p.name, bot: !!p.bot })),
+      players: s.players.map(p => ({ id: p.id, name: p.name, bot: !!p.bot, admin: !!p.admin })),
       order: s.order.map(id => ({
         id, name: byId[id] ?? '?',
         bot: !!s.players.find(p => p.id === id)?.bot,
@@ -203,13 +243,14 @@ export class DraftRoom extends DurableObject {
   async broadcast(s) {
     const msg = JSON.stringify({ type: 'state', state: this.view(s) });
     for (const ws of this.ctx.getWebSockets()) {
+      if (!this.socketRole(ws)) continue;   // never leak the board to an unauthenticated peer
       try { ws.send(msg); } catch { /* peer gone; close handler cleans up */ }
     }
   }
 
   // -- actions --------------------------------------------------------------
 
-  join(s, { name, playerId }) {
+  join(s, { name, playerId }, role) {
     const clean = String(name ?? '').trim().slice(0, 20);
 
     // Reclaiming a seat after a refresh or a dropped connection.
@@ -217,6 +258,7 @@ export class DraftRoom extends DurableObject {
       const existing = s.players.find(p => p.id === playerId);
       if (existing) {
         if (clean && s.phase === 'lobby') existing.name = clean;
+        existing.admin = role === 'admin';
         return { ok: true, playerId: existing.id };
       }
     }
@@ -229,7 +271,7 @@ export class DraftRoom extends DurableObject {
     }
 
     const id = crypto.randomUUID();
-    s.players.push({ id, name: clean });
+    s.players.push({ id, name: clean, admin: role === 'admin' });
     return { ok: true, playerId: id };
   }
 
@@ -240,6 +282,44 @@ export class DraftRoom extends DurableObject {
 
     const n = s.players.filter(p => p.bot).length + 1;
     s.players.push({ id: crypto.randomUUID(), name: `Bot ${n}`, bot: true });
+    return { ok: true };
+  }
+
+  // -- admin actions ---------------------------------------------------------
+
+  /** Walk the most recent pick back and hand the clock to whoever made it. */
+  undoLastPick(s) {
+    if (!s.picks.length) return { ok: false, error: 'nothing_to_undo' };
+    if (s.phase === 'lobby') return { ok: false, error: 'not_drafting' };
+
+    const undone = s.picks.pop();
+    // Completing the draft locks the room; walking a pick back reopens it.
+    if (s.phase === 'done') { s.phase = 'drafting'; s.finishedAt = null; }
+    return { ok: true, undone: undone.team };
+  }
+
+  /** Swap one completed pick for a team nobody owns; the old team returns to the pool. */
+  replacePick(s, overall, team) {
+    const entry = s.picks.find(p => p.overall === Number(overall));
+    if (!entry) return { ok: false, error: 'no_such_pick' };
+
+    const abbr = String(team ?? '').toUpperCase();
+    if (!TEAMS.includes(abbr)) return { ok: false, error: 'unknown_team' };
+    if (abbr === entry.team) return { ok: false, error: 'same_team' };
+    if (this.takenTeams(s).has(abbr)) return { ok: false, error: 'team_taken' };
+
+    entry.team = abbr;
+    return { ok: true };
+  }
+
+  removePlayer(s, playerId) {
+    if (s.phase !== 'lobby') return { ok: false, error: 'draft_already_started' };
+    const before = s.players.length;
+    s.players = s.players.filter(p => p.id !== playerId);
+    if (s.players.length === before) return { ok: false, error: 'no_such_player' };
+    // Bot numbering stays contiguous so a removed bot does not leave a gap.
+    let n = 0;
+    s.players.forEach(p => { if (p.bot) p.name = `Bot ${++n}`; });
     return { ok: true };
   }
 
@@ -363,13 +443,19 @@ export class DraftRoom extends DurableObject {
       }
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1]);
-      const s = await this.ensureRoom(await this.load(), roomName);
-      try { pair[1].send(JSON.stringify({ type: 'state', state: this.view(s) })); } catch {}
+      this.setSocketRole(pair[1], null, 0);
+      await this.ensureRoom(await this.load(), roomName);
+      // No room state until the peer authenticates. The password is never put
+      // in the upgrade URL, so it arrives as the first message instead.
+      try { pair[1].send(JSON.stringify({ type: 'authRequired' })); } catch {}
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
 
     if (tail === 'export') {
-      const s = await this.load();
+      const s = await this.ensureRoom(await this.load(), roomName);
+      if (!await this.roleFor(s, request.headers.get('X-Draft-Password'))) {
+        return json({ error: 'unauthorized' }, { status: 401 }, cors);
+      }
       if (s.phase !== 'done') {
         return json({ error: 'draft_not_finished', phase: s.phase }, { status: 409 }, cors);
       }
@@ -386,6 +472,9 @@ export class DraftRoom extends DurableObject {
 
     if (tail === '') {
       const s = await this.ensureRoom(await this.load(), roomName);
+      if (!await this.roleFor(s, request.headers.get('X-Draft-Password'))) {
+        return json({ error: 'unauthorized' }, { status: 401 }, cors);
+      }
       return json(this.view(s), { status: 200 }, cors);
     }
 
@@ -397,14 +486,66 @@ export class DraftRoom extends DurableObject {
     try { msg = JSON.parse(raw); } catch { return; }
 
     const s = await this.load();
+
+    // ── authentication ──────────────────────────────────────────────────────
+    if (msg.type === 'auth') {
+      if (!s.practice && !this.passwordsConfigured()) {
+        try { ws.send(JSON.stringify({ type: 'authFail', error: 'draft_password_not_configured' })); } catch {}
+        return;
+      }
+      const role = await this.roleFor(s, msg.password, msg.elevate === true);
+      if (!role) {
+        // Keep whatever role this socket already had: mistyping the admin
+        // password should not kick an authenticated player out of the draft.
+        const prev = this.socketInfo(ws);
+        const attempts = prev.attempts + 1;
+        this.setSocketRole(ws, prev.role, attempts);
+        try { ws.send(JSON.stringify({ type: 'authFail', error: 'bad_password' })); } catch {}
+        if (attempts >= MAX_AUTH_ATTEMPTS) { try { ws.close(4003, 'too many attempts'); } catch {} }
+        return;
+      }
+      this.setSocketRole(ws, role, 0);
+      try {
+        ws.send(JSON.stringify({ type: 'authOk', role }));
+        ws.send(JSON.stringify({ type: 'state', state: this.view(s) }));
+      } catch {}
+      return;
+    }
+
+    // Everything else requires an authenticated socket. Unauthenticated peers
+    // are told nothing about the room, not even that it exists.
+    const role = this.socketRole(ws);
+    if (!role) {
+      try { ws.send(JSON.stringify({ type: 'authRequired' })); } catch {}
+      return;
+    }
+
+    const adminOnly = ['undoPick', 'replacePick', 'removePlayer', 'resetRoom'];
+    if (adminOnly.includes(msg.type) && role !== 'admin') {
+      try { ws.send(JSON.stringify({ type: 'error', error: 'admin_only' })); } catch {}
+      return;
+    }
+
     let result = { ok: false, error: 'unknown_action' };
 
     switch (msg.type) {
-      case 'join':    result = this.join(s, msg); break;
+      case 'join':    result = this.join(s, msg, role); break;
       case 'leave':   result = this.leave(s, msg.playerId); break;
       case 'addBot':  result = this.addBot(s); break;
       case 'start':   result = this.start(s); break;
       case 'pick':    result = this.pick(s, msg.playerId, msg.team); break;
+
+      case 'undoPick':     result = this.undoLastPick(s); break;
+      case 'replacePick':  result = this.replacePick(s, msg.overall, msg.team); break;
+      case 'removePlayer': result = this.removePlayer(s, msg.playerId); break;
+      case 'resetRoom': {
+        const fresh = this.fresh();
+        fresh.room = s.room;
+        fresh.practice = s.practice;
+        await this.save(fresh);
+        await this.broadcast(fresh);
+        return;
+      }
     }
 
     if (!result.ok) {

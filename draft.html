@@ -21,6 +21,29 @@
     .conn.live { color: var(--green); }
     .conn.down { color: var(--red); }
 
+    /* ── password gate ── */
+    .gate-error { color: var(--red); font-size: 13px; margin-top: 14px; }
+    .linkish {
+      background: none; border: none; cursor: pointer; padding: 0;
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--text-dim);
+    }
+    .linkish:hover { color: var(--gold); }
+
+    /* ── admin ── */
+    .admin-bar { border: 1px dashed var(--gold-dim); }
+    .btn.danger { border-color: rgba(230,57,70,0.5); color: var(--red); }
+    .btn.danger:hover { border-color: var(--red); background: rgba(230,57,70,0.08); }
+    .seat { position: relative; }
+    .seat-kick {
+      position: absolute; top: 4px; right: 6px; background: none; border: none;
+      color: var(--text-dim); font-size: 13px; cursor: pointer; line-height: 1; padding: 2px 4px;
+    }
+    .seat-kick:hover { color: var(--red); }
+    .roster .slot.editable { cursor: pointer; border-radius: 4px; }
+    .roster .slot.editable:hover { background: rgba(255,255,255,0.05); color: var(--gold); }
+    .roster .slot.replacing { background: rgba(245,166,35,0.14); color: var(--gold); }
+
     /* ── practice banner ── */
     .practice-banner {
       display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
@@ -141,6 +164,7 @@
       </div>
       <div class="header-right">
         <a href="index.html" class="summary-link">← Tracker</a>
+        <button class="linkish" id="admin-link" onclick="openGate()">Admin</button>
         <div class="updated-badge"><span class="conn" id="conn">connecting</span></div>
       </div>
     </header>
@@ -158,6 +182,9 @@
     const DEFAULT_ROOM = '2026-27';
     const ROOM = params.get('room') ?? DEFAULT_ROOM;
     const SEAT_KEY = `isc-draft-seat:${ROOM}`;
+    // Remembered so a reload or a dropped connection mid-draft does not lock you
+    // out. Deliberately not carried in the URL, where it would leak into history.
+    const PW_KEY = `isc-draft-pw:${ROOM}`;
 
     const TEAM_NAMES = {
       ANA: 'Anaheim Ducks', BOS: 'Boston Bruins', BUF: 'Buffalo Sabres',
@@ -185,6 +212,13 @@
       team_taken: 'That team is already gone.',
       not_drafting: 'The draft is not running.',
       unknown_team: 'Unknown team.',
+      admin_only: 'That control is admin-only.',
+      nothing_to_undo: 'There are no picks to undo.',
+      no_such_pick: 'That pick no longer exists.',
+      no_such_player: 'That player is already gone.',
+      same_team: 'That pick already has that team.',
+      bad_password: 'Wrong password.',
+      draft_password_not_configured: 'No draft password is set on the server yet.',
     };
 
     // ── state ────────────────────────────────────────────────────────────────
@@ -194,6 +228,18 @@
     let pendingName = null;
     let retry = 0;
     let heartbeat = null;
+    let myPassword = localStorage.getItem(PW_KEY) ?? '';
+    let myRole = null;              // null until the server says otherwise
+    let authError = null;
+    let replacing = null;           // overall pick number being re-assigned by an admin
+    let showGate = false;           // re-open the password prompt to elevate to admin
+    let pendingPassword = null;     // candidate password awaiting the server's verdict
+
+    const isAdmin = () => myRole === 'admin';
+
+    // A practice room admits you with no password at all, so the gate never
+    // appears there. This is how you still get to type the admin password.
+    function openGate() { showGate = true; render(); }
 
     const el = id => document.getElementById(id);
     const isMe = id => id && id === myId;
@@ -222,8 +268,8 @@
       ws.addEventListener('open', () => {
         retry = 0;
         setConn('live', 'live');
-        // Reclaim our seat after a refresh or a dropped connection.
-        if (myId) send({ type: 'join', playerId: myId });
+        // Authenticate first; nothing else is answered until the server agrees.
+        send({ type: 'auth', password: myPassword });
         // Bare "ping" is answered by the Cloudflare runtime itself, so this
         // keeps mobile networks from reaping an idle socket without ever
         // waking the draft room.
@@ -237,6 +283,32 @@
         let m;
         try { m = JSON.parse(ev.data); } catch { return; }
         if (m.type === 'state') { STATE = m.state; render(); }
+        else if (m.type === 'authRequired') {
+          myRole = null;
+          if (myPassword) send({ type: 'auth', password: myPassword });
+          else render();
+        }
+        else if (m.type === 'authOk') {
+          myRole = m.role;
+          authError = null;
+          showGate = false;
+          if (pendingPassword !== null) { myPassword = pendingPassword; pendingPassword = null; }
+          localStorage.setItem(PW_KEY, myPassword);
+          // Re-send join so the server can update our admin flag on the seat.
+          if (myId) send({ type: 'join', playerId: myId });
+          render();
+        }
+        else if (m.type === 'authFail') {
+          pendingPassword = null;
+          authError = ERRORS[m.error] ?? m.error;
+          // A wrong guess while already authenticated is just a failed
+          // elevation; only a peer with no role at all gets locked out.
+          if (!myRole) {
+            myPassword = '';
+            localStorage.removeItem(PW_KEY);
+          }
+          render();
+        }
         else if (m.type === 'joined') {
           myId = m.playerId;
           localStorage.setItem(SEAT_KEY, myId);
@@ -272,6 +344,37 @@
 
     function doStart() { send({ type: 'start' }); }
     function doAddBot() { send({ type: 'addBot' }); }
+
+    function doAuth() {
+      const input = el('pw-input');
+      const pw = input?.value ?? '';
+      if (!pw) return toast('Enter the password.');
+      // Held aside until the server accepts it, so a failed elevation attempt
+      // does not discard the password that is already working.
+      pendingPassword = pw;
+      authError = null;
+      // Already holding a role means this is a bid for admin specifically.
+      send({ type: 'auth', password: pw, elevate: !!myRole });
+    }
+
+    // ── admin ────────────────────────────────────────────────────────────────
+    function doUndo() { send({ type: 'undoPick' }); }
+    function doRemovePlayer(id) { send({ type: 'removePlayer', playerId: id }); }
+
+    function beginReplace(overall) {
+      replacing = replacing === overall ? null : overall;
+      render();
+    }
+    function doReplace(team) {
+      send({ type: 'replacePick', overall: replacing, team });
+      replacing = null;
+    }
+
+    function doReset() {
+      if (!confirm('Reset this room? Every pick and player is wiped and the draft starts over.')) return;
+      send({ type: 'resetRoom' });
+      replacing = null;
+    }
     function doLeave() {
       send({ type: 'leave', playerId: myId });
       localStorage.removeItem(SEAT_KEY);
@@ -281,7 +384,8 @@
 
     async function downloadState() {
       try {
-        const res = await fetch(`${WORKER}/room/${encodeURIComponent(ROOM)}/export`);
+        const res = await fetch(`${WORKER}/room/${encodeURIComponent(ROOM)}/export`,
+          { headers: { 'X-Draft-Password': myPassword } });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -298,7 +402,8 @@
     }
 
     async function showJson() {
-      const res = await fetch(`${WORKER}/room/${encodeURIComponent(ROOM)}/export`);
+      const res = await fetch(`${WORKER}/room/${encodeURIComponent(ROOM)}/export`,
+        { headers: { 'X-Draft-Password': myPassword } });
       const text = JSON.stringify(await res.json(), null, 2);
       const pre = document.createElement('pre');
       pre.className = 'json';
@@ -312,9 +417,19 @@
 
     // ── render ───────────────────────────────────────────────────────────────
     function render() {
+      // Locked out until the server grants a role, or deliberately re-opened.
+      if (!myRole || showGate) {
+        el('season-sub').textContent = myRole ? 'Enter admin password' : 'Password required';
+        el('admin-link').style.display = 'none';
+        el('stage').replaceChildren(renderGate());
+        return;
+      }
+      el('admin-link').style.display = isAdmin() ? 'none' : '';
       if (!STATE) return;
+
       el('season-sub').textContent =
-        `${STATE.season} · ${STATE.capacity} players · ${STATE.rounds} rounds`;
+        `${STATE.season} · ${STATE.capacity} players · ${STATE.rounds} rounds` +
+        (isAdmin() ? ' · admin' : '');
 
       const stage = el('stage');
       const body = STATE.phase === 'lobby' ? renderLobby()
@@ -343,6 +458,37 @@
       if (cls) n.className = cls;
       if (text != null) n.textContent = text;   // textContent, never innerHTML — names are user input
       return n;
+    }
+
+    // -- password gate --
+    function renderGate() {
+      const box = node('div', 'section lobby');
+      box.appendChild(node('h2', null, myRole ? 'Admin Access' : 'The ISC Draft'));
+      box.appendChild(node('div', 'hint', myRole
+        ? 'Enter the admin password to unlock undo and re-assign.'
+        : 'Enter the draft password to continue.'));
+
+      const form = node('div', 'join-form');
+      const input = document.createElement('input');
+      input.id = 'pw-input';
+      input.type = 'password';
+      input.placeholder = 'Password';
+      input.autocomplete = 'current-password';
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') doAuth(); });
+      const btn = node('button', 'btn', 'Enter');
+      btn.onclick = doAuth;
+      form.append(input, btn);
+
+      // Only offer a way out if we already have a working role to fall back on.
+      if (myRole) {
+        const cancel = node('button', 'btn ghost', 'Cancel');
+        cancel.onclick = () => { showGate = false; authError = null; render(); };
+        form.appendChild(cancel);
+      }
+      box.appendChild(form);
+
+      if (authError) box.appendChild(node('div', 'gate-error', authError));
+      return box;
     }
 
     // -- lobby --
@@ -381,9 +527,16 @@
         const p = STATE.players[i];
         const seat = node('div', 'seat ' + (p ? 'filled' : 'empty') +
           (p && isMe(p.id) ? ' me' : '') + (p?.bot ? ' bot' : ''));
-        seat.appendChild(node('div', 'who', p ? p.name : 'Open seat'));
+        seat.appendChild(node('div', 'who', (p ? p.name : 'Open seat') + (p?.admin ? ' ★' : '')));
         seat.appendChild(node('div', 'tag',
           p ? (isMe(p.id) ? 'you' : p.bot ? 'bot' : 'ready') : 'waiting'));
+
+        if (p && isAdmin()) {
+          const kick = node('button', 'seat-kick', '✕');
+          kick.title = `Remove ${p.name}`;
+          kick.onclick = (e) => { e.stopPropagation(); doRemovePlayer(p.id); };
+          seat.appendChild(kick);
+        }
         seats.appendChild(seat);
       }
       box.appendChild(seats);
@@ -438,7 +591,8 @@
 
       // board
       const boardSection = node('div', 'section');
-      boardSection.appendChild(node('div', 'section-label', 'Available Teams'));
+      boardSection.appendChild(node('div', 'section-label',
+        replacing ? `Choose a replacement for pick #${replacing}` : 'Available Teams'));
       const board = node('div', 'board');
       const takenBy = {};
       STATE.picks.forEach(p => takenBy[p.team] = p.name);
@@ -447,21 +601,50 @@
         const owner = takenBy[abbr];
         const btn = node('button', 'team-btn' + (owner ? ' taken' : '') +
           (abbr === STATE.startChampion ? ' champ' : ''));
-        btn.disabled = !!owner || !mine;
+        // While an admin is re-assigning a pick, the board picks the new team.
+        btn.disabled = replacing ? !!owner : (!!owner || !mine);
         btn.appendChild(node('span', 'abbr', abbr));
         btn.appendChild(node('span', 'full', TEAM_NAMES[abbr] ?? abbr));
         if (abbr === STATE.startChampion && !owner) {
           btn.appendChild(node('span', 'crown', 'HOLDS THE CUP'));
         }
         if (owner) btn.appendChild(node('span', 'owner', owner));
-        if (!owner) btn.onclick = () => doPick(abbr);
+        if (!owner) btn.onclick = () => (replacing ? doReplace(abbr) : doPick(abbr));
         board.appendChild(btn);
       });
       boardSection.appendChild(board);
+
+      if (replacing) {
+        const cancel = node('button', 'btn ghost', 'Cancel re-assign');
+        cancel.onclick = () => { replacing = null; render(); };
+        const row = node('div', 'done-actions');
+        row.appendChild(cancel);
+        boardSection.appendChild(row);
+      }
       wrap.appendChild(boardSection);
 
+      if (isAdmin()) wrap.appendChild(renderAdminBar());
       wrap.appendChild(renderRosters());
       return wrap;
+    }
+
+    function renderAdminBar() {
+      const box = node('div', 'section admin-bar');
+      box.appendChild(node('div', 'section-label', 'Admin'));
+      const row = node('div', 'done-actions');
+
+      const undo = node('button', 'btn ghost', 'Undo last pick');
+      undo.disabled = !STATE.picks.length;
+      undo.onclick = doUndo;
+
+      const reset = node('button', 'btn ghost danger', 'Reset room');
+      reset.onclick = doReset;
+
+      row.append(undo, reset);
+      box.appendChild(row);
+      box.appendChild(node('div', 'hint',
+        'Tap any drafted team in the rosters below to swap it for a free one.'));
+      return box;
     }
 
     function renderRosters() {
@@ -476,9 +659,16 @@
         const picks = STATE.picks.filter(p => p.playerId === o.id);
         for (let i = 0; i < STATE.rounds; i++) {
           const p = picks[i];
-          const slot = node('div', 'slot' + (p ? ' filled' : ''));
+          const editable = p && isAdmin() && STATE.phase !== 'lobby';
+          const slot = node('div', 'slot' + (p ? ' filled' : '') +
+            (editable ? ' editable' : '') +
+            (p && replacing === p.overall ? ' replacing' : ''));
           slot.appendChild(node('span', 'n', String(i + 1).padStart(2, '0')));
           slot.appendChild(document.createTextNode(p ? p.team : '—'));
+          if (editable) {
+            slot.title = `Re-assign pick #${p.overall}`;
+            slot.onclick = () => beginReplace(p.overall);
+          }
           card.appendChild(slot);
         }
         grid.appendChild(card);

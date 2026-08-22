@@ -82,8 +82,8 @@ until all 32 teams are owned. The finished room hands you a ready-to-commit
 1. Archive the season that just ended (see **Archiving a season** below).
 2. Update the season vars in `worker/wrangler.jsonc` and `DEFAULT_ROOM` in
    `draft.html`, then redeploy the worker (see **The draft worker**).
-3. Send everyone the link to `draft.html`.
-4. Each player enters a name and joins. The **Draw Order & Start** button turns on
+3. Send everyone the link to `draft.html`, plus the draft password.
+4. Each player enters the password, then a name, and joins. The **Draw Order & Start** button turns on
    once the room is full — anybody in the room can press it.
 5. Draft. Only the player on the clock can pick; taken teams grey out for everyone.
 6. When the last team goes, press **Download state.json**.
@@ -92,6 +92,50 @@ until all 32 teams are owned. The finished room hands you a ready-to-commit
 
 Refreshing the page or losing signal is safe — your seat is remembered in the
 browser and reclaimed automatically when you come back.
+
+### Passwords
+
+The real draft room is password protected so a stranger with the link cannot
+take a seat. There are two passwords, both stored as Cloudflare secrets:
+
+```
+cd worker
+npx wrangler secret put DRAFT_PASSWORD    # give this one to the players
+npx wrangler secret put ADMIN_PASSWORD    # keep this one to yourself
+```
+
+Entering `DRAFT_PASSWORD` gets you a normal seat. Entering `ADMIN_PASSWORD`
+gets you a seat *plus* admin controls — you still draft like everyone else.
+
+The password is checked in the worker, never in the page, because the
+WebSocket is public and a client-side check could simply be skipped. It is
+typed into a field rather than passed in the URL, so it stays out of browser
+history and screenshots, and it is remembered per browser so a reload
+mid-draft does not lock anyone out. Six wrong guesses drops the connection.
+
+Until a password is set, a real room refuses everyone. Practice rooms stay
+open — no password needed — so rehearsals are frictionless. The **Admin** link
+in the header is how you enter the admin password from inside a room you are
+already in, which is the only way to get admin in an open practice room.
+
+Nobody without a password sees anything: no board, no names, no picks. The
+JSON snapshot and `/export` also require the password, via an
+`X-Draft-Password` header.
+
+### Admin controls
+
+Whoever entered `ADMIN_PASSWORD` gets:
+
+| Control | What it does |
+| --- | --- |
+| **Undo last pick** | Removes the most recent pick and hands the clock back. Press repeatedly to walk several picks back. Works after the draft has finished, which reopens it. |
+| **Re-assign a pick** | Tap any drafted team in the rosters, then tap a free team on the board. The old team returns to the pool; the pick keeps its owner and slot. |
+| **Remove a player** | The ✕ on a seat in the lobby. Bots are renumbered so there is no gap. |
+| **Reset room** | Wipes the room back to an empty lobby. Asks for confirmation first. |
+
+Admin actions are authorised from the connection's own role on the server, not
+from anything the page claims, so a player cannot invoke them by crafting a
+message.
 
 ### Rehearsing a draft on your own
 
