@@ -56,6 +56,7 @@
       text-transform: uppercase; color: var(--rink); background: var(--gold);
       padding: 3px 8px; border-radius: 4px; font-weight: 500;
     }
+    .banner-action { margin-left: auto; text-decoration: underline; }
     .bots-warning { background: rgba(230,57,70,0.08); border-color: var(--red); }
     .pb-tag.warn { background: var(--red); color: #fff; }
 
@@ -166,6 +167,8 @@
       </div>
       <div class="header-right">
         <a href="index.html" class="summary-link">← Tracker</a>
+        <a href="draft.html?room=practice" class="summary-link" id="practice-link">Practice</a>
+        <a href="draft.html" class="summary-link" id="real-link" style="display:none">Real draft</a>
         <button class="linkish" id="admin-link" onclick="openGate()">Admin</button>
         <div class="updated-badge"><span class="conn" id="conn">connecting</span></div>
       </div>
@@ -386,6 +389,15 @@
       send({ type: 'resetRoom' });
       replacing = null;
     }
+
+    function doStartOver() {
+      if (!confirm('Clear this practice room and start a fresh rehearsal?')) return;
+      send({ type: 'resetRoom' });
+      replacing = null;
+      // Drop the seat too, so the next rehearsal starts from the join screen.
+      localStorage.removeItem(SEAT_KEY);
+      myId = null;
+    }
     function doLeave() {
       send({ type: 'leave', playerId: myId });
       localStorage.removeItem(SEAT_KEY);
@@ -432,11 +444,17 @@
       if (!myRole || showGate) {
         el('season-sub').textContent = myRole ? 'Enter admin password' : 'Password required';
         el('admin-link').style.display = 'none';
+        el('practice-link').style.display = 'none';
+        el('real-link').style.display = 'none';
         el('stage').replaceChildren(renderGate());
         return;
       }
       el('admin-link').style.display = isAdmin() ? 'none' : '';
       if (!STATE) return;
+
+      // Whichever room you are not in is the one worth linking to.
+      el('practice-link').style.display = STATE.practice ? 'none' : '';
+      el('real-link').style.display = STATE.practice ? '' : 'none';
 
       el('season-sub').textContent =
         `${STATE.season} · ${STATE.capacity} players · ${STATE.rounds} rounds` +
@@ -454,6 +472,10 @@
         banner.appendChild(node('span', 'pb-tag', 'Practice'));
         banner.appendChild(document.createTextNode(
           ' This is a rehearsal room — nothing here affects the real draft.'));
+        // One practice room, reusable: no need to invent a new name each time.
+        const over = node('button', 'linkish banner-action', 'Start over');
+        over.onclick = doStartOver;
+        banner.appendChild(over);
         stage.replaceChildren(banner, body);
       } else if (bots) {
         // Bots outside a practice room mean somebody is rehearsing. Say so

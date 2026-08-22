@@ -173,13 +173,21 @@ draft.html?room=practice
 ```
 
 Join with your name, then press **Add a bot** until the room is full and start as
-normal. Bots pick for themselves after a short pause, so one person can run a
+normal. (Downloading a rehearsal’s `state.json` needs admin — tap **Admin** first.) Bots pick for themselves after a short pause, so one person can run a
 complete 32-team draft alone and see exactly what everyone else will see.
 
+There is one practice room and it is reusable: **Start over** in the practice
+banner wipes it back to an empty lobby so you can run another rehearsal
+immediately. Anyone in a practice room can do that — no admin needed — so there
+is no reason to invent a new room name each time. The **Practice** and **Real
+draft** links in the header switch between the two, so neither URL has to be
+remembered.
+
+Any room name starting with `practice` still works if you want a separate one,
+but you should not need it.
+
 Bots are driven by the room itself rather than by your browser, so the draft
-carries on if you reload the page or your phone locks. Any room name starting
-with `practice` works — `?room=practice-2`, `?room=practice-phones` — which
-means you can leave old rehearsals lying around without them getting in the way.
+carries on if you reload the page or your phone locks.
 
 A **player** cannot add bots outside a practice room, so the real draft cannot
 be stuffed with them. An **admin** can add them anywhere, which is what makes a

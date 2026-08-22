@@ -531,7 +531,11 @@ export class DraftRoom extends DurableObject {
       return;
     }
 
-    const adminOnly = ['undoPick', 'replacePick', 'removePlayer', 'resetRoom'];
+    // A practice room is disposable by definition, so anyone in one may wipe it
+    // and start again. That keeps a single well-known practice room reusable
+    // instead of needing a fresh name for every rehearsal.
+    const adminOnly = ['undoPick', 'replacePick', 'removePlayer']
+      .concat(s.practice ? [] : ['resetRoom']);
     if (adminOnly.includes(msg.type) && role !== 'admin') {
       try { ws.send(JSON.stringify({ type: 'error', error: 'admin_only' })); } catch {}
       return;
