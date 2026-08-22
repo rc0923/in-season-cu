@@ -215,6 +215,7 @@
       room_not_full: 'Everyone has to join before the draft can start.',
       not_your_turn: 'Not your pick.',
       bots_admin_only: 'Only an admin can add bots.',
+      start_admin_only: 'Only an admin can start the draft.',
       team_taken: 'That team is already gone.',
       not_drafting: 'The draft is not running.',
       unknown_team: 'Unknown team.',
@@ -563,10 +564,15 @@
 
       const joined = STATE.players.length;
       const need = STATE.capacity - joined;
+      const admins = STATE.players.filter(p => p.admin && !isMe(p.id)).map(p => p.name);
       box.appendChild(node('div', 'hint',
         need > 0
           ? `Waiting for ${need} more player${need === 1 ? '' : 's'}…`
-          : 'Everyone is in. Draw the order and start.'));
+          : isAdmin()
+            ? 'Everyone is in. Draw the order and start.'
+            : admins.length
+              ? `Everyone is in. Waiting for ${admins.join(' or ')} to start the draft.`
+              : 'Everyone is in. Waiting for the commissioner to start the draft.'));
 
       const inRoom = STATE.players.some(p => isMe(p.id));
 
@@ -608,10 +614,14 @@
 
       if (inRoom) {
         const actions = node('div', 'done-actions');
-        const start = node('button', 'btn', 'Draw Order & Start');
-        start.disabled = joined < STATE.capacity;
-        start.onclick = doStart;
-        actions.appendChild(start);
+
+        // Starting is the commissioner's call; everyone else is told who to wait on.
+        if (isAdmin()) {
+          const start = node('button', 'btn', 'Draw Order & Start');
+          start.disabled = joined < STATE.capacity;
+          start.onclick = doStart;
+          actions.appendChild(start);
+        }
 
         // Seating a bot is the commissioner's call, wherever the room is.
         if (isAdmin() && joined < STATE.capacity) {

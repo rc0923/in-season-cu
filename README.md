@@ -83,8 +83,9 @@ until all 32 teams are owned. The finished room hands you a ready-to-commit
 2. Update the season vars in `worker/wrangler.jsonc` and `DEFAULT_ROOM` in
    `draft.html`, then redeploy the worker (see **The draft worker**).
 3. Send everyone the link to `draft.html`, plus the draft password.
-4. Each player enters the password, then a name, and joins. The **Draw Order & Start** button turns on
-   once the room is full — anybody in the room can press it.
+4. Each player enters the password, then a name, and joins. Once the room is
+   full the admin presses **Draw Order & Start**; everyone else is told who
+   they are waiting on.
 5. Draft. Only the player on the clock can pick; taken teams grey out for everyone.
 6. When the last team goes, the admin presses **Download state.json**.
 7. Replace `state.json` in the repo root with that file and commit. The site picks
@@ -137,6 +138,8 @@ Whoever entered `ADMIN_PASSWORD` gets:
 | **Undo last pick** | Removes the most recent pick and hands the clock back. Press repeatedly to walk several picks back. Works after the draft has finished, which reopens it. |
 | **Re-assign a pick** | Tap any drafted team in the rosters, then tap a free team on the board. The old team returns to the pool; the pick keeps its owner and slot. |
 | **Remove a player** | The ✕ on a seat in the lobby. Bots are renumbered so there is no gap. |
+| **Start the draft** | Only the admin can draw the order and begin. Committing everyone to a draft should not go to whoever taps first. |
+| **Add bots** | Only the admin can seat a bot, in any room. |
 | **Reset room** | Wipes the room back to an empty lobby. Asks for confirmation first. |
 | **Download the season** | When the draft finishes, only the admin is offered `state.json`. Everyone else just sees the final rosters. The `/export` endpoint enforces this too — a draft password gets 403 — so hiding the button is not the only thing stopping it. |
 

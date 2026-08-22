@@ -359,7 +359,10 @@ export class DraftRoom extends DurableObject {
     return { ok: s.players.length !== before, error: 'not_in_room' };
   }
 
-  start(s) {
+  start(s, role) {
+    // Drawing the order commits everyone to a draft, so it is the
+    // commissioner's call rather than whoever taps first.
+    if (role !== 'admin') return { ok: false, error: 'start_admin_only' };
     if (s.phase !== 'lobby') return { ok: false, error: 'already_started' };
     if (s.players.length !== s.capacity) return { ok: false, error: 'room_not_full' };
 
@@ -557,7 +560,7 @@ export class DraftRoom extends DurableObject {
       case 'join':    result = this.join(s, msg, role); break;
       case 'leave':   result = this.leave(s, msg.playerId); break;
       case 'addBot':  result = this.addBot(s, role); break;
-      case 'start':   result = this.start(s); break;
+      case 'start':   result = this.start(s, role); break;
       case 'pick':    result = this.pick(s, msg.playerId, msg.team); break;
 
       case 'undoPick':     result = this.undoLastPick(s); break;
