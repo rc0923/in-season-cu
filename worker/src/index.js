@@ -27,6 +27,11 @@ const TEAMS = [
 // the same number of teams and no team goes unowned.
 const ALLOWED_CAPACITIES = [2, 4, 8];
 
+// Bots exist so one person can rehearse a whole draft alone. They are allowed
+// only in rooms named "practice…", which is what keeps them out of a real draft.
+const BOT_DELAY_MS = 1400;
+const isPracticeRoom = (room) => /^practice/i.test(room ?? '');
+
 function corsHeaders(request, env) {
   const origin = request.headers.get('Origin') ?? '';
   const allowed = (env.ALLOWED_ORIGINS ?? '')
@@ -121,6 +126,8 @@ export class DraftRoom extends DurableObject {
     const capacity = Number(this.env.CAPACITY ?? 4);
     return {
       phase: 'lobby',                       // lobby | drafting | done
+      room: '',                             // set on first request, from the URL
+      practice: false,                      // practice rooms may add bots
       capacity: ALLOWED_CAPACITIES.includes(capacity) ? capacity : 4,
       season: this.env.SEASON ?? '',
       seasonStart: this.env.SEASON_START ?? '',
@@ -141,6 +148,15 @@ export class DraftRoom extends DurableObject {
   }
 
   async save(s) { await this.ctx.storage.put('state', s); }
+
+  /** A Durable Object is not told its own name, so learn it from the first request. */
+  async ensureRoom(s, roomName) {
+    if (s.room === roomName) return s;
+    s.room = roomName;
+    s.practice = isPracticeRoom(roomName);
+    await this.save(s);
+    return s;
+  }
 
   // -- draft mechanics ------------------------------------------------------
 
@@ -165,13 +181,17 @@ export class DraftRoom extends DurableObject {
     const byId = Object.fromEntries(s.players.map(p => [p.id, p.name]));
     return {
       phase: s.phase,
+      practice: s.practice,
       capacity: s.capacity,
       season: s.season,
       seasonStart: s.seasonStart,
       seasonEnd: s.seasonEnd,
       startChampion: s.startChampion,
-      players: s.players.map(p => ({ id: p.id, name: p.name })),
-      order: s.order.map(id => ({ id, name: byId[id] ?? '?' })),
+      players: s.players.map(p => ({ id: p.id, name: p.name, bot: !!p.bot })),
+      order: s.order.map(id => ({
+        id, name: byId[id] ?? '?',
+        bot: !!s.players.find(p => p.id === id)?.bot,
+      })),
       picks: s.picks.map(p => ({ ...p, name: byId[p.playerId] ?? '?' })),
       onClock: this.onClock(s),
       rounds: this.rounds(s),
@@ -211,6 +231,44 @@ export class DraftRoom extends DurableObject {
     const id = crypto.randomUUID();
     s.players.push({ id, name: clean });
     return { ok: true, playerId: id };
+  }
+
+  addBot(s) {
+    if (!s.practice) return { ok: false, error: 'bots_practice_only' };
+    if (s.phase !== 'lobby') return { ok: false, error: 'draft_already_started' };
+    if (s.players.length >= s.capacity) return { ok: false, error: 'room_full' };
+
+    const n = s.players.filter(p => p.bot).length + 1;
+    s.players.push({ id: crypto.randomUUID(), name: `Bot ${n}`, bot: true });
+    return { ok: true };
+  }
+
+  /**
+   * If a bot is on the clock, wake up shortly and pick for it. Driving bots from
+   * an alarm rather than from a client means the draft carries on even if the
+   * only human reloads the page or locks their phone.
+   */
+  async scheduleBotTurn(s) {
+    if (s.phase !== 'drafting') return;
+    const onClock = s.players.find(p => p.id === this.onClock(s));
+    if (onClock?.bot) await this.ctx.storage.setAlarm(Date.now() + BOT_DELAY_MS);
+  }
+
+  async alarm() {
+    const s = await this.load();
+    if (s.phase !== 'drafting') return;
+
+    const onClock = s.players.find(p => p.id === this.onClock(s));
+    if (!onClock?.bot) return;
+
+    const taken = this.takenTeams(s);
+    const available = TEAMS.filter(t => !taken.has(t));
+    if (!available.length) return;
+
+    this.pick(s, onClock.id, available[randomBelow(available.length)]);
+    await this.save(s);
+    await this.broadcast(s);
+    await this.scheduleBotTurn(s);   // consecutive bots keep the chain going
   }
 
   leave(s, playerId) {
@@ -297,6 +355,7 @@ export class DraftRoom extends DurableObject {
     const cors = corsHeaders(request, this.env);
     const parts = url.pathname.split('/').filter(Boolean);
     const tail = parts[2] ?? '';
+    const roomName = decodeURIComponent(parts[1] ?? '').slice(0, 64);
 
     if (tail === 'ws') {
       if (request.headers.get('Upgrade') !== 'websocket') {
@@ -304,7 +363,7 @@ export class DraftRoom extends DurableObject {
       }
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1]);
-      const s = await this.load();
+      const s = await this.ensureRoom(await this.load(), roomName);
       try { pair[1].send(JSON.stringify({ type: 'state', state: this.view(s) })); } catch {}
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
@@ -326,7 +385,7 @@ export class DraftRoom extends DurableObject {
     }
 
     if (tail === '') {
-      const s = await this.load();
+      const s = await this.ensureRoom(await this.load(), roomName);
       return json(this.view(s), { status: 200 }, cors);
     }
 
@@ -341,10 +400,11 @@ export class DraftRoom extends DurableObject {
     let result = { ok: false, error: 'unknown_action' };
 
     switch (msg.type) {
-      case 'join':  result = this.join(s, msg); break;
-      case 'leave': result = this.leave(s, msg.playerId); break;
-      case 'start': result = this.start(s); break;
-      case 'pick':  result = this.pick(s, msg.playerId, msg.team); break;
+      case 'join':    result = this.join(s, msg); break;
+      case 'leave':   result = this.leave(s, msg.playerId); break;
+      case 'addBot':  result = this.addBot(s); break;
+      case 'start':   result = this.start(s); break;
+      case 'pick':    result = this.pick(s, msg.playerId, msg.team); break;
     }
 
     if (!result.ok) {
@@ -357,6 +417,7 @@ export class DraftRoom extends DurableObject {
       try { ws.send(JSON.stringify({ type: 'joined', playerId: result.playerId })); } catch {}
     }
     await this.broadcast(s);
+    await this.scheduleBotTurn(s);
   }
 
   // The runtime auto-replies to Close frames on this compatibility date, so

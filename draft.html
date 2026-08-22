@@ -21,6 +21,19 @@
     .conn.live { color: var(--green); }
     .conn.down { color: var(--red); }
 
+    /* ── practice banner ── */
+    .practice-banner {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+      background: rgba(245,166,35,0.08); border: 1px dashed var(--gold-dim);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;
+      color: var(--text-dim); font-size: 13px;
+    }
+    .pb-tag {
+      font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px;
+      text-transform: uppercase; color: var(--rink); background: var(--gold);
+      padding: 3px 8px; border-radius: 4px; font-weight: 500;
+    }
+
     /* ── lobby ── */
     .lobby { text-align: center; padding: 40px 24px; }
     .lobby h2 { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; color: var(--gold); }
@@ -54,6 +67,8 @@
     .seat .who { font-size: 16px; font-weight: 500; }
     .seat .tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; }
     .seat.empty .who { color: var(--text-dim); font-style: italic; }
+    .seat.bot { border-style: dashed; }
+    .seat.bot .who { color: var(--text-dim); }
 
     /* ── order strip ── */
     .order-strip { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 4px; }
@@ -166,6 +181,7 @@
       already_started: 'The draft has already started.',
       room_not_full: 'Everyone has to join before the draft can start.',
       not_your_turn: 'Not your pick.',
+      bots_practice_only: 'Bots are only allowed in a practice room.',
       team_taken: 'That team is already gone.',
       not_drafting: 'The draft is not running.',
       unknown_team: 'Unknown team.',
@@ -255,6 +271,7 @@
     }
 
     function doStart() { send({ type: 'start' }); }
+    function doAddBot() { send({ type: 'addBot' }); }
     function doLeave() {
       send({ type: 'leave', playerId: myId });
       localStorage.removeItem(SEAT_KEY);
@@ -300,11 +317,19 @@
         `${STATE.season} · ${STATE.capacity} players · ${STATE.rounds} rounds`;
 
       const stage = el('stage');
-      stage.replaceChildren(
-        STATE.phase === 'lobby' ? renderLobby()
+      const body = STATE.phase === 'lobby' ? renderLobby()
         : STATE.phase === 'drafting' ? renderDraft()
-        : renderDone()
-      );
+        : renderDone();
+
+      if (STATE.practice) {
+        const banner = node('div', 'practice-banner');
+        banner.appendChild(node('span', 'pb-tag', 'Practice'));
+        banner.appendChild(document.createTextNode(
+          ' This is a rehearsal room — nothing here affects the real draft.'));
+        stage.replaceChildren(banner, body);
+      } else {
+        stage.replaceChildren(body);
+      }
     }
 
     function frag(...nodes) {
@@ -354,9 +379,11 @@
       const seats = node('div', 'seats');
       for (let i = 0; i < STATE.capacity; i++) {
         const p = STATE.players[i];
-        const seat = node('div', 'seat ' + (p ? 'filled' : 'empty') + (p && isMe(p.id) ? ' me' : ''));
+        const seat = node('div', 'seat ' + (p ? 'filled' : 'empty') +
+          (p && isMe(p.id) ? ' me' : '') + (p?.bot ? ' bot' : ''));
         seat.appendChild(node('div', 'who', p ? p.name : 'Open seat'));
-        seat.appendChild(node('div', 'tag', p ? (isMe(p.id) ? 'you' : 'ready') : 'waiting'));
+        seat.appendChild(node('div', 'tag',
+          p ? (isMe(p.id) ? 'you' : p.bot ? 'bot' : 'ready') : 'waiting'));
         seats.appendChild(seat);
       }
       box.appendChild(seats);
@@ -366,9 +393,18 @@
         const start = node('button', 'btn', 'Draw Order & Start');
         start.disabled = joined < STATE.capacity;
         start.onclick = doStart;
+        actions.appendChild(start);
+
+        // Practice rooms can be filled out with bots so one person can rehearse.
+        if (STATE.practice && joined < STATE.capacity) {
+          const bot = node('button', 'btn ghost', 'Add a bot');
+          bot.onclick = doAddBot;
+          actions.appendChild(bot);
+        }
+
         const leave = node('button', 'btn ghost', 'Leave');
         leave.onclick = doLeave;
-        actions.append(start, leave);
+        actions.appendChild(leave);
         box.appendChild(actions);
       }
 
@@ -393,9 +429,10 @@
       const round = Math.floor(STATE.picks.length / STATE.capacity) + 1;
       clock.appendChild(node('div', 'meta',
         `Round ${round} of ${STATE.rounds} · Pick ${STATE.picks.length + 1} of ${STATE.totalPicks}`));
-      const onClockName = STATE.order.find(o => o.id === STATE.onClock)?.name ?? '—';
-      clock.appendChild(node('div', 'who', mine ? 'Your pick' : onClockName));
-      clock.appendChild(node('div', 'sub', mine ? 'Take a team below.' : 'on the clock'));
+      const onClockPlayer = STATE.order.find(o => o.id === STATE.onClock);
+      clock.appendChild(node('div', 'who', mine ? 'Your pick' : (onClockPlayer?.name ?? '—')));
+      clock.appendChild(node('div', 'sub',
+        mine ? 'Take a team below.' : onClockPlayer?.bot ? 'thinking…' : 'on the clock'));
       head.appendChild(clock);
       wrap.appendChild(head);
 
@@ -434,7 +471,8 @@
 
       STATE.order.forEach(o => {
         const card = node('div', 'roster' + (isMe(o.id) ? ' me' : ''));
-        card.appendChild(node('h3', null, o.name + (isMe(o.id) ? ' (you)' : '')));
+        card.appendChild(node('h3', null,
+          o.name + (isMe(o.id) ? ' (you)' : o.bot ? ' 🤖' : '')));
         const picks = STATE.picks.filter(p => p.playerId === o.id);
         for (let i = 0; i < STATE.rounds; i++) {
           const p = picks[i];

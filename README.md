@@ -93,6 +93,27 @@ until all 32 teams are owned. The finished room hands you a ready-to-commit
 Refreshing the page or losing signal is safe — your seat is remembered in the
 browser and reclaimed automatically when you come back.
 
+### Rehearsing a draft on your own
+
+You do not need four people to try the draft. Open a practice room:
+
+```
+draft.html?room=practice
+```
+
+Join with your name, then press **Add a bot** until the room is full and start as
+normal. Bots pick for themselves after a short pause, so one person can run a
+complete 32-team draft alone and see exactly what everyone else will see.
+
+Bots are driven by the room itself rather than by your browser, so the draft
+carries on if you reload the page or your phone locks. Any room name starting
+with `practice` works — `?room=practice-2`, `?room=practice-phones` — which
+means you can leave old rehearsals lying around without them getting in the way.
+
+**Bots are refused in any room not named `practice…`**, so there is no way to
+accidentally fill the real draft with them. A practice room can still export a
+`state.json`; just do not commit it.
+
 ### The draft worker
 
 The live room is a Cloudflare Durable Object in `worker/`. Deploy it once:
