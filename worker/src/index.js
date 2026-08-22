@@ -447,17 +447,25 @@ export class DraftRoom extends DurableObject {
       const pair = new WebSocketPair();
       this.ctx.acceptWebSocket(pair[1]);
       this.setSocketRole(pair[1], null, 0);
-      await this.ensureRoom(await this.load(), roomName);
+      const s = await this.ensureRoom(await this.load(), roomName);
       // No room state until the peer authenticates. The password is never put
       // in the upgrade URL, so it arrives as the first message instead.
-      try { pair[1].send(JSON.stringify({ type: 'authRequired' })); } catch {}
+      // `open` lets a client know an empty password will be accepted here, so
+      // it can avoid a pointless failed attempt on a gated room.
+      try { pair[1].send(JSON.stringify({ type: 'authRequired', open: !!s.practice })); } catch {}
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
 
     if (tail === 'export') {
       const s = await this.ensureRoom(await this.load(), roomName);
-      if (!await this.roleFor(s, request.headers.get('X-Draft-Password'))) {
+      const role = await this.roleFor(s, request.headers.get('X-Draft-Password'));
+      if (!role) {
         return json({ error: 'unauthorized' }, { status: 401 }, cors);
+      }
+      // The finished season is the admin's to commit, so only the admin can
+      // fetch it. Hiding the button alone would leave the endpoint open.
+      if (role !== 'admin') {
+        return json({ error: 'admin_only' }, { status: 403 }, cors);
       }
       if (s.phase !== 'done') {
         return json({ error: 'draft_not_finished', phase: s.phase }, { status: 409 }, cors);

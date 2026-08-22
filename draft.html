@@ -270,8 +270,9 @@
       ws.addEventListener('open', () => {
         retry = 0;
         setConn('live', 'live');
-        // Authenticate first; nothing else is answered until the server agrees.
-        send({ type: 'auth', password: myPassword });
+        // The server opens with authRequired; authentication is driven from
+        // there, so a first-time visitor is never auto-failed with a blank
+        // password and shown an error they did not cause.
         // Bare "ping" is answered by the Cloudflare runtime itself, so this
         // keeps mobile networks from reaping an idle socket without ever
         // waking the draft room.
@@ -287,7 +288,9 @@
         if (m.type === 'state') { STATE = m.state; render(); }
         else if (m.type === 'authRequired') {
           myRole = null;
-          if (myPassword) send({ type: 'auth', password: myPassword });
+          // Only attempt when there is something to attempt with: a remembered
+          // password, or a room the server says takes an empty one.
+          if (myPassword || m.open) send({ type: 'auth', password: myPassword });
           else render();
         }
         else if (m.type === 'authOk') {
@@ -705,17 +708,27 @@
       head.appendChild(node('div', 'hint',
         `All ${STATE.totalPicks} teams are spoken for. ${TEAM_NAMES[STATE.startChampion] ?? STATE.startChampion} open the season holding the cup.`));
 
-      const actions = node('div', 'done-actions');
-      const dl = node('button', 'btn', 'Download state.json');
-      dl.onclick = downloadState;
-      const show = node('button', 'btn ghost', 'Show / copy JSON');
-      show.onclick = showJson;
-      actions.append(dl, show);
-      head.appendChild(actions);
+      // Only the admin takes the finished season away; everyone else just sees
+      // the result. The endpoint enforces this too, not only the button.
+      if (isAdmin()) {
+        const actions = node('div', 'done-actions');
+        const dl = node('button', 'btn', 'Download state.json');
+        dl.onclick = downloadState;
+        const show = node('button', 'btn ghost', 'Show / copy JSON');
+        show.onclick = showJson;
+        actions.append(dl, show);
+        head.appendChild(actions);
 
-      const slot = node('div');
-      slot.id = 'json-slot';
-      head.appendChild(slot);
+        const slot = node('div');
+        slot.id = 'json-slot';
+        head.appendChild(slot);
+      } else {
+        const admins = STATE.players.filter(p => p.admin).map(p => p.name);
+        head.appendChild(node('div', 'hint',
+          admins.length
+            ? `${admins.join(' and ')} will save the results and commit them.`
+            : 'The commissioner will save the results and commit them.'));
+      }
       wrap.appendChild(head);
 
       wrap.appendChild(renderRosters());

@@ -86,7 +86,7 @@ until all 32 teams are owned. The finished room hands you a ready-to-commit
 4. Each player enters the password, then a name, and joins. The **Draw Order & Start** button turns on
    once the room is full — anybody in the room can press it.
 5. Draft. Only the player on the clock can pick; taken teams grey out for everyone.
-6. When the last team goes, press **Download state.json**.
+6. When the last team goes, the admin presses **Download state.json**.
 7. Replace `state.json` in the repo root with that file and commit. The site picks
    it up within a minute or two.
 
@@ -132,6 +132,7 @@ Whoever entered `ADMIN_PASSWORD` gets:
 | **Re-assign a pick** | Tap any drafted team in the rosters, then tap a free team on the board. The old team returns to the pool; the pick keeps its owner and slot. |
 | **Remove a player** | The ✕ on a seat in the lobby. Bots are renumbered so there is no gap. |
 | **Reset room** | Wipes the room back to an empty lobby. Asks for confirmation first. |
+| **Download the season** | When the draft finishes, only the admin is offered `state.json`. Everyone else just sees the final rosters. The `/export` endpoint enforces this too — a draft password gets 403 — so hiding the button is not the only thing stopping it. |
 
 Admin actions are authorised from the connection's own role on the server, not
 from anything the page claims, so a player cannot invoke them by crafting a
