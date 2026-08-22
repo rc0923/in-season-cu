@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Season Summary · The ISC 2025-26</title>
+<title>Season Summary · The ISC</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
@@ -639,7 +639,7 @@ function buildReigns() {
 function renderHero(reigns) {
   const season = STATE.season.replace('-', '–');
   document.getElementById('hero-title').textContent = season;
-  document.getElementById('hero-games').textContent = STATE.gameLog.length + ' games';
+  document.getElementById('hero-games').textContent = STATE.gameLog.length;
   const transfers = reigns.filter(r => r.lostTo).length;
   document.getElementById('hero-transfers').textContent = transfers;
 }
@@ -889,20 +889,28 @@ function renderPlayerCards() {
 // ── boot ──────────────────────────────────────────────────────────────────────
 
 async function init() {
+  // ?season=2025-26 renders a finished season from seasons/; no param = the live season.
+  const requested = new URLSearchParams(location.search).get('season');
+  const archived  = /^\d{4}-\d{2}$/.test(requested ?? '') ? requested : null;
+  const source    = archived ? `seasons/${archived}.json` : 'state.json';
+
   try {
-    const res = await fetch('state.json?bust=' + Date.now());
+    const res = await fetch(source + '?bust=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     STATE = await res.json();
   } catch (e) {
     document.body.innerHTML = `<div style="padding:40px;color:#e63946;font-family:monospace">
-      Could not load state.json: ${e.message}</div>`;
+      Could not load ${source}: ${e.message}</div>`;
     return;
   }
 
-  if (!STATE.seasonOver) {
+  // A live season has no summary yet. Archived seasons are finished by definition.
+  if (!archived && !STATE.seasonOver) {
     window.location.replace('index.html');
     return;
   }
+
+  document.title = `Season Summary · The ISC ${STATE.season}`;
 
   // Build player color map in standings order
   const sorted = [...STATE.players].sort((a,b) => b.days - a.days);

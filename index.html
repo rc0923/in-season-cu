@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The ISC 2025-26</title>
+  <title>The ISC</title>
   <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
@@ -23,10 +23,11 @@
     <header class="section">
       <div class="logo-area">
         <h1>The In-Season CUPM</h1>
-        <div class="subtitle">In Season Stanley Cup · 2025–26</div>
+        <div class="subtitle">In Season Stanley Cup · <span id="season-label">—</span></div>
       </div>
       <div class="header-right">
         <a href="summary.html" class="summary-link" id="summary-link" style="display:none">Season Summary →</a>
+        <span id="past-seasons"></span>
         <div class="updated-badge">
           Last updated
           <span id="last-updated">—</span>
@@ -191,6 +192,11 @@
       document.getElementById('champ-wins').textContent = owner?.wins ?? '—';
       document.getElementById('champ-streak').textContent = owner?.streak ?? '—';
       document.getElementById('last-updated').textContent = formatDate(STATE.lastUpdated);
+
+      // Season label is data, not markup — one edit to state.json retitles the page.
+      const seasonLabel = STATE.season.replace('-', '–');
+      document.getElementById('season-label').textContent = seasonLabel;
+      document.title = `The ISC ${STATE.season}`;
       if (STATE.seasonOver) {
         document.getElementById('summary-link').style.display = '';
         document.getElementById('season-over-banner').style.display = '';
@@ -399,6 +405,26 @@
 
     // ── boot ─────────────────────────────────────────────────────────────────────
 
+    // Past seasons are listed in seasons/index.json; each has a frozen seasons/<id>.json.
+    async function renderArchives() {
+      try {
+        const res = await fetch('seasons/index.json?bust=' + Date.now());
+        if (!res.ok) return;
+        const seasons = await res.json();
+        const el = document.getElementById('past-seasons');
+        seasons
+          .filter(id => id !== STATE.season)
+          .sort().reverse()
+          .forEach(id => {
+            const a = document.createElement('a');
+            a.className = 'summary-link';
+            a.href = `summary.html?season=${id}`;
+            a.textContent = id.replace('-', '–');
+            el.appendChild(a);
+          });
+      } catch { /* archive links are optional chrome — never block the page */ }
+    }
+
     async function init() {
       try {
         STATE = await loadState();
@@ -411,6 +437,7 @@
       renderChampion();
       renderStandings();
       renderLog();
+      renderArchives();
       loadTodayGame();
     }
 

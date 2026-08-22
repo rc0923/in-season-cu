@@ -108,10 +108,13 @@ async function main() {
   console.log(`Found ${games.length} games on schedule today`);
 
   // Find a FINAL game featuring the champion
+  // gameType 2 is the regular season. 1 is preseason and 3 is playoffs — neither
+  // counts as a title defense, and the schedule endpoint serves all three identically.
   const champGame = games.find(g => {
     const teams = [g.awayTeam?.abbrev, g.homeTeam?.abbrev];
     const isFinal = ['OFF', 'FINAL'].includes(g.gameState);
-    return teams.includes(champion) && isFinal;
+    const isRegularSeason = g.gameType === 2;
+    return teams.includes(champion) && isFinal && isRegularSeason;
   });
 
   if (!champGame) {

@@ -141,6 +141,7 @@ function buildState(season, seasonEndDate, champion, players) {
     return {
         champion,
         lastUpdated: today,
+        lastDayTick: today,
         season,
         seasonEndDate,
         seasonOver: false,
@@ -197,7 +198,6 @@ async function main() {
 
         // ── Season end date ──
         blank();
-        let seasonEndDate;
         while (true) {
             const raw = await ask('  Season end date (YYYY-MM-DD, last day of regular season): ');
             if (/^\d{4}-\d{2}-\d{2}$/.test(raw)) {
