@@ -118,6 +118,12 @@ door the players will on the night. Until a password is set, no room can be
 entered at all. The **Admin** link in the header is how you enter the admin
 password from inside a room you are already in, without leaving your seat.
 
+**Sign out** drops the role back to the password prompt and forgets the
+remembered password, so an admin can hand their phone over or step back down
+to an ordinary player. Your seat is kept: entering the draft password again
+returns you to it without admin. The role is revoked on the server, not just
+hidden, so the connection genuinely loses its powers.
+
 Nobody without a password sees anything: no board, no names, no picks. The
 JSON snapshot and `/export` also require the password, via an
 `X-Draft-Password` header.

@@ -170,6 +170,7 @@
         <a href="draft.html?room=practice" class="summary-link" id="practice-link">Practice</a>
         <a href="draft.html" class="summary-link" id="real-link" style="display:none">Real draft</a>
         <button class="linkish" id="admin-link" onclick="openGate()">Admin</button>
+        <button class="linkish" id="signout-link" onclick="doSignOut()" style="display:none">Sign out</button>
         <div class="updated-badge"><span class="conn" id="conn">connecting</span></div>
       </div>
     </header>
@@ -245,6 +246,24 @@
     // A practice room admits you with no password at all, so the gate never
     // appears there. This is how you still get to type the admin password.
     function openGate() { showGate = true; render(); }
+
+    // Drop back to the password prompt. The seat is kept, so re-entering with
+    // the draft password returns you to it as an ordinary player.
+    function doSignOut() {
+      const wasAdmin = isAdmin();
+      if (!confirm(wasAdmin
+        ? 'Sign out of admin? You will need a password to get back in.'
+        : 'Sign out of this room?')) return;
+
+      send({ type: 'signOut', playerId: myId });
+      myRole = null;
+      myPassword = '';
+      pendingPassword = null;
+      authError = null;
+      showGate = false;
+      localStorage.removeItem(PW_KEY);
+      render();
+    }
 
     const el = id => document.getElementById(id);
     const isMe = id => id && id === myId;
@@ -444,12 +463,15 @@
       if (!myRole || showGate) {
         el('season-sub').textContent = myRole ? 'Enter admin password' : 'Password required';
         el('admin-link').style.display = 'none';
+        el('signout-link').style.display = 'none';
         el('practice-link').style.display = 'none';
         el('real-link').style.display = 'none';
         el('stage').replaceChildren(renderGate());
         return;
       }
       el('admin-link').style.display = isAdmin() ? 'none' : '';
+      el('signout-link').style.display = '';
+      el('signout-link').textContent = isAdmin() ? 'Sign out of admin' : 'Sign out';
       if (!STATE) return;
 
       // Whichever room you are not in is the one worth linking to.

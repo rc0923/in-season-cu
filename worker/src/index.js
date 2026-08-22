@@ -531,6 +531,20 @@ export class DraftRoom extends DurableObject {
     // A practice room is disposable by definition, so anyone in one may wipe it
     // and start again. That keeps a single well-known practice room reusable
     // instead of needing a fresh name for every rehearsal.
+    // Dropping a role has to happen on the server: clearing it only in the page
+    // would leave this connection still authorised to run admin actions.
+    if (msg.type === 'signOut') {
+      this.setSocketRole(ws, null, 0);
+      const me = s.players.find(p => p.id === msg.playerId);
+      if (me?.admin) {
+        me.admin = false;
+        await this.save(s);
+        await this.broadcast(s);
+      }
+      try { ws.send(JSON.stringify({ type: 'authRequired' })); } catch {}
+      return;
+    }
+
     const adminOnly = ['undoPick', 'replacePick', 'removePlayer']
       .concat(s.practice ? [] : ['resetRoom']);
     if (adminOnly.includes(msg.type) && role !== 'admin') {
