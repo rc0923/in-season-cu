@@ -291,9 +291,9 @@
         if (m.type === 'state') { STATE = m.state; render(); }
         else if (m.type === 'authRequired') {
           myRole = null;
-          // Only attempt when there is something to attempt with: a remembered
-          // password, or a room the server says takes an empty one.
-          if (myPassword || m.open) send({ type: 'auth', password: myPassword });
+          // Only attempt with a remembered password. A first-time visitor gets
+          // the prompt rather than a failure they did not cause.
+          if (myPassword) send({ type: 'auth', password: myPassword });
           else render();
         }
         else if (m.type === 'authOk') {

@@ -159,22 +159,21 @@ export class DraftRoom extends DurableObject {
    * rather than in the page: the WebSocket is public, so a client-side check
    * would be bypassed by talking to the room directly.
    *
-   * Practice rooms are open so a rehearsal needs no password, but the admin
-   * password still works there so admin controls can be rehearsed too.
+   * Practice rooms are gated exactly like real ones, so a rehearsal exercises
+   * the same door the players will meet on the night. What practice changes is
+   * what you may do once inside, not who gets in.
    */
   async roleFor(s, password, adminOnly = false) {
     const pw = String(password ?? '');
     if (this.env.ADMIN_PASSWORD && await secretsMatch(pw, this.env.ADMIN_PASSWORD)) return 'admin';
-    // Someone deliberately reaching for admin must produce the admin password.
-    // Without this, the open-practice-room fallback below would quietly hand
-    // back "player" and read as success.
+    // Someone deliberately reaching for admin must produce the admin password,
+    // rather than falling through and being handed "player" as a false success.
     if (adminOnly) return null;
     if (this.env.DRAFT_PASSWORD && await secretsMatch(pw, this.env.DRAFT_PASSWORD)) return 'player';
-    if (s.practice) return 'player';
     return null;
   }
 
-  /** Whether a real draft room can be entered at all. Fails closed. */
+  /** Whether any room can be entered at all. Fails closed. */
   passwordsConfigured() {
     return Boolean(this.env.DRAFT_PASSWORD || this.env.ADMIN_PASSWORD);
   }
@@ -450,9 +449,7 @@ export class DraftRoom extends DurableObject {
       const s = await this.ensureRoom(await this.load(), roomName);
       // No room state until the peer authenticates. The password is never put
       // in the upgrade URL, so it arrives as the first message instead.
-      // `open` lets a client know an empty password will be accepted here, so
-      // it can avoid a pointless failed attempt on a gated room.
-      try { pair[1].send(JSON.stringify({ type: 'authRequired', open: !!s.practice })); } catch {}
+      try { pair[1].send(JSON.stringify({ type: 'authRequired' })); } catch {}
       return new Response(null, { status: 101, webSocket: pair[0] });
     }
 
@@ -500,7 +497,7 @@ export class DraftRoom extends DurableObject {
 
     // ── authentication ──────────────────────────────────────────────────────
     if (msg.type === 'auth') {
-      if (!s.practice && !this.passwordsConfigured()) {
+      if (!this.passwordsConfigured()) {
         try { ws.send(JSON.stringify({ type: 'authFail', error: 'draft_password_not_configured' })); } catch {}
         return;
       }
@@ -557,6 +554,9 @@ export class DraftRoom extends DurableObject {
         const fresh = this.fresh();
         fresh.room = s.room;
         fresh.practice = s.practice;
+        // Clear the stored draft outright rather than writing over it, so a
+        // reset room keeps nothing — including any pending bot alarm.
+        await this.ctx.storage.deleteAll();
         await this.save(fresh);
         await this.broadcast(fresh);
         return;

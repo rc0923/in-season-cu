@@ -113,10 +113,10 @@ typed into a field rather than passed in the URL, so it stays out of browser
 history and screenshots, and it is remembered per browser so a reload
 mid-draft does not lock anyone out. Six wrong guesses drops the connection.
 
-Until a password is set, a real room refuses everyone. Practice rooms stay
-open — no password needed — so rehearsals are frictionless. The **Admin** link
-in the header is how you enter the admin password from inside a room you are
-already in, which is the only way to get admin in an open practice room.
+Every room is gated, practice rooms included, so a rehearsal meets the same
+door the players will on the night. Until a password is set, no room can be
+entered at all. The **Admin** link in the header is how you enter the admin
+password from inside a room you are already in, without leaving your seat.
 
 Nobody without a password sees anything: no board, no names, no picks. The
 JSON snapshot and `/export` also require the password, via an
@@ -175,6 +175,10 @@ draft.html?room=practice
 Join with your name, then press **Add a bot** until the room is full and start as
 normal. (Downloading a rehearsal’s `state.json` needs admin — tap **Admin** first.) Bots pick for themselves after a short pause, so one person can run a
 complete 32-team draft alone and see exactly what everyone else will see.
+
+The practice room needs the same draft password as the real one, so opening it
+rehearses the gate too. What practice changes is what you may do once inside,
+not who gets in: anyone there can add bots and reset the room.
 
 There is one practice room and it is reusable: **Start over** in the practice
 banner wipes it back to an empty lobby so you can run another rehearsal

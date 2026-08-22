@@ -113,13 +113,13 @@ async function withoutSecrets(room) {
     { method: 'POST', headers: { 'X-Draft-Password': 'nope' } });
   check('reset needs its own ADMIN_TOKEN', reset.status === 401, `got ${reset.status}`);
 
-  console.log('\nPRACTICE ROOMS');
+  console.log('\nPRACTICE ROOMS ARE GATED TOO');
   const p = await client('practice');
   await until(() => p.msgs.includes('authRequired'));
   send(p, { type: 'auth', password: '' });
-  await until(() => p.role !== null, 6000);
-  check('open without a password', p.role === 'player', `role=${p.role}`);
-  check('never grant admin for free', p.role !== 'admin');
+  await sleep(1200);
+  check('an empty password gets in nowhere', p.role === null, `role=${p.role}`);
+  check('no board for an unauthenticated peer', p.state === null);
   p.ws.close();
 }
 
