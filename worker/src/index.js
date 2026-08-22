@@ -275,10 +275,9 @@ export class DraftRoom extends DurableObject {
   }
 
   addBot(s, role) {
-    // Practice rooms are open to bots. Elsewhere only an admin may add one, so
-    // a full-fidelity rehearsal (password gate included) is possible without
-    // handing every player a way to stuff the real draft with bots.
-    if (!s.practice && role !== 'admin') return { ok: false, error: 'bots_practice_only' };
+    // Bots are a rehearsal tool, and only the person running the draft should
+    // be able to seat one — in any room, practice included.
+    if (role !== 'admin') return { ok: false, error: 'bots_admin_only' };
     if (s.phase !== 'lobby') return { ok: false, error: 'draft_already_started' };
     if (s.players.length >= s.capacity) return { ok: false, error: 'room_full' };
 

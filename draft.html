@@ -214,7 +214,7 @@
       already_started: 'The draft has already started.',
       room_not_full: 'Everyone has to join before the draft can start.',
       not_your_turn: 'Not your pick.',
-      bots_practice_only: 'Only an admin can add bots outside a practice room.',
+      bots_admin_only: 'Only an admin can add bots.',
       team_taken: 'That team is already gone.',
       not_drafting: 'The draft is not running.',
       unknown_team: 'Unknown team.',
@@ -613,8 +613,8 @@
         start.onclick = doStart;
         actions.appendChild(start);
 
-        // Practice rooms can be filled with bots by anyone; elsewhere only an admin.
-        if ((STATE.practice || isAdmin()) && joined < STATE.capacity) {
+        // Seating a bot is the commissioner's call, wherever the room is.
+        if (isAdmin() && joined < STATE.capacity) {
           const bot = node('button', 'btn ghost', 'Add a bot');
           bot.onclick = doAddBot;
           actions.appendChild(bot);

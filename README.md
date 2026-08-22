@@ -178,13 +178,14 @@ You do not need four people to try the draft. Open a practice room:
 draft.html?room=practice
 ```
 
-Join with your name, then press **Add a bot** until the room is full and start as
-normal. (Downloading a rehearsal’s `state.json` needs admin — tap **Admin** first.) Bots pick for themselves after a short pause, so one person can run a
+Enter the draft password, tap **Admin** and enter the admin password, then join
+with your name and press **Add a bot** until the room is full. (Downloading a rehearsal’s `state.json` needs admin — tap **Admin** first.) Bots pick for themselves after a short pause, so one person can run a
 complete 32-team draft alone and see exactly what everyone else will see.
 
 The practice room needs the same draft password as the real one, so opening it
-rehearses the gate too. What practice changes is what you may do once inside,
-not who gets in: anyone there can add bots and reset the room.
+rehearses the gate too. Adding bots needs admin, so tap **Admin** before
+filling the seats. Resetting the room does not — anyone in a practice room can
+press **Start over**.
 
 There is one practice room and it is reusable: **Start over** in the practice
 banner wipes it back to an empty lobby so you can run another rehearsal
@@ -199,10 +200,8 @@ but you should not need it.
 Bots are driven by the room itself rather than by your browser, so the draft
 carries on if you reload the page or your phone locks.
 
-A **player** cannot add bots outside a practice room, so the real draft cannot
-be stuffed with them. An **admin** can add them anywhere, which is what makes a
-full-fidelity rehearsal possible — password gate, real room, bots to fill the
-seats. Outside a practice room this asks for confirmation first, and the room
+Only an **admin** can seat a bot, in any room, so nobody else can pad the draft
+with them. Outside a practice room it asks for confirmation first, and the room
 then carries a red **Rehearsal** banner naming how many bots are in it for as
 long as any remain. Remove them with the ✕ on their seats, or reset the room.
 
