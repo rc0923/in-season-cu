@@ -379,9 +379,10 @@
     {
       "num": 11,
       "date": "2025-11-01",
-      "visitor": "MTL",
-      "home": "OTT",
-      "score": null
+      "visitor": "OTT",
+      "home": "MTL",
+      "score": "3-4",
+      "nhlGameId": "2025020187"
     },
     {
       "num": 12,
@@ -652,9 +653,10 @@
     {
       "num": 50,
       "date": "2026-01-24",
-      "visitor": "NSH",
-      "home": "UTA",
-      "score": null
+      "visitor": "UTA",
+      "home": "NSH",
+      "score": "5-2",
+      "nhlGameId": "2025020811"
     },
     {
       "num": 51,
@@ -708,9 +710,10 @@
     {
       "num": 58,
       "date": "2026-02-28",
-      "visitor": "CAR",
-      "home": "DET",
-      "score": null
+      "visitor": "DET",
+      "home": "CAR",
+      "score": "2-5",
+      "nhlGameId": "2025020942"
     },
     {
       "num": 59,
@@ -778,9 +781,10 @@
     {
       "num": 68,
       "date": "2026-03-20",
-      "visitor": "WSH",
-      "home": "NJD",
-      "score": null
+      "visitor": "NJD",
+      "home": "WSH",
+      "score": "1-2",
+      "nhlGameId": "2025021095"
     },
     {
       "num": 69,

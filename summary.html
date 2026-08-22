@@ -587,11 +587,53 @@ function ownerOf(abbr) {
 
 // ── derive reigns from game log ───────────────────────────────────────────────
 
+// The per-team counters in state.json are the official record. Calendar spans
+// derived from the game log disagree with them (an early-season bug undercounted
+// days on which the champion did not play), so each team's derived reign spans
+// are rescaled to sum to its stored total. Chronology, defenses and transfers
+// still come from the game log — only the day counts are reconciled.
+function reconcileDaysWithStoredTotals(reigns) {
+  const storedDaysFor = (abbr) => {
+    for (const p of STATE.players) {
+      const t = p.teams.find(t => t.abbr === abbr);
+      if (t) return t.days;
+    }
+    return 0;
+  };
+
+  const idxByTeam = {};
+  reigns.forEach((r, i) => (idxByTeam[r.team] = idxByTeam[r.team] ?? []).push(i));
+
+  for (const idxs of Object.values(idxByTeam)) {
+    const target    = storedDaysFor(reigns[idxs[0]].team);
+    const spans     = idxs.map(i => reigns[i].days);
+    const spanTotal = spans.reduce((a, b) => a + b, 0);
+
+    // Share `target` across this team's reigns in proportion to their spans,
+    // then hand leftover whole days to the largest fractional parts so the
+    // rounded values sum to `target` exactly.
+    const exact  = spanTotal > 0
+      ? spans.map(s => s / spanTotal * target)
+      : idxs.map(() => target / idxs.length);
+    const floors = exact.map(Math.floor);
+    const short  = target - floors.reduce((a, b) => a + b, 0);
+    exact
+      .map((v, k) => ({ k, frac: v - Math.floor(v) }))
+      .sort((a, b) => b.frac - a.frac)
+      .slice(0, Math.max(0, short))
+      .forEach(({ k }) => floors[k]++);
+
+    idxs.forEach((i, k) => { reigns[i].days = floors[k]; });
+  }
+
+  return reigns;
+}
+
 function buildReigns() {
   if (!STATE.gameLog.length) return [];
 
-  // Determine the initial champion from the first game's home team
-  let champion = STATE.gameLog[0].home;
+  // Prefer an explicit startingChampion; fall back to the first game's home team.
+  let champion = STATE.startingChampion ?? STATE.gameLog[0].home;
   const reigns = [];
   let reignStart = STATE.gameLog[0].date;
   let defended = 0;
@@ -631,7 +673,7 @@ function buildReigns() {
     defended, lostTo: null,
   });
 
-  return reigns;
+  return reconcileDaysWithStoredTotals(reigns);
 }
 
 // ── render hero ───────────────────────────────────────────────────────────────
