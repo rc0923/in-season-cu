@@ -137,6 +137,32 @@ Admin actions are authorised from the connection's own role on the server, not
 from anything the page claims, so a player cannot invoke them by crafting a
 message.
 
+### Checking the room is healthy
+
+Before a real draft — and after rotating passwords or deploying — run:
+
+```
+cd worker
+npm run verify
+```
+
+It checks the deployed worker against a disposable room, so a real draft is
+never touched. The first half needs no secrets: it confirms passwords are
+actually configured, that an unauthenticated peer gets nothing at all, that
+guessing drops the connection, and that every HTTP endpoint refuses a wrong
+password. The second half prompts for both passwords with hidden input and
+confirms the draft password grants a player seat, the admin password grants
+admin, a player is refused admin controls, and — importantly — that the two
+passwords are different. Identical passwords would quietly make everyone admin.
+
+Nothing you type is echoed or written to your shell history, and only PASS/FAIL
+lines are printed. It exits non-zero if anything fails.
+
+```
+npm run verify -- --skip-passwords    # only the checks needing no secrets
+ISC_HOST=127.0.0.1:8788 npm run verify   # against a local `wrangler dev`
+```
+
 ### Rehearsing a draft on your own
 
 You do not need four people to try the draft. Open a practice room:
