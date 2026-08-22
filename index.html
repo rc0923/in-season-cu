@@ -26,6 +26,7 @@
         <div class="subtitle">In Season Stanley Cup · <span id="season-label">—</span></div>
       </div>
       <div class="header-right">
+        <a href="draft.html" class="summary-link" id="draft-link" style="display:none">Draft Room →</a>
         <a href="summary.html" class="summary-link" id="summary-link" style="display:none">Season Summary →</a>
         <span id="past-seasons"></span>
         <div class="updated-badge">
@@ -200,6 +201,11 @@
       if (STATE.seasonOver) {
         document.getElementById('summary-link').style.display = '';
         document.getElementById('season-over-banner').style.display = '';
+      }
+
+      // The draft only matters before a season has any games on the board.
+      if (!STATE.seasonOver && STATE.gameLog.length === 0) {
+        document.getElementById('draft-link').style.display = '';
       }
     }
 

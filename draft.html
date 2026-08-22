@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The ISC Draft</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png">
+  <link rel="shortcut icon" href="favicons/favicon.ico">
+  <link rel="manifest" href="favicons/site.webmanifest">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ── connection pill ── */
+    .conn { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; }
+    .conn.live { color: var(--green); }
+    .conn.down { color: var(--red); }
+
+    /* ── lobby ── */
+    .lobby { text-align: center; padding: 40px 24px; }
+    .lobby h2 { font-family: 'Bebas Neue', sans-serif; font-size: 42px; letter-spacing: 2px; color: var(--gold); }
+    .lobby .hint { color: var(--text-dim); font-size: 14px; margin-top: 6px; }
+
+    .join-form { display: flex; gap: 10px; justify-content: center; margin: 28px 0 8px; flex-wrap: wrap; }
+    .join-form input {
+      background: var(--rink-mid); border: 1px solid var(--line); color: var(--text);
+      padding: 12px 16px; border-radius: 6px; font-family: 'DM Sans', sans-serif;
+      font-size: 16px; width: 240px; max-width: 100%;
+    }
+    .join-form input:focus { outline: none; border-color: var(--gold); }
+
+    .btn {
+      background: var(--gold); color: var(--rink); border: none; padding: 12px 24px;
+      border-radius: 6px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+      font-size: 15px; cursor: pointer;
+    }
+    .btn:hover { background: #ffb733; }
+    .btn:disabled { background: var(--rink-light); color: var(--text-dim); cursor: not-allowed; }
+    .btn.ghost { background: transparent; border: 1px solid var(--line); color: var(--text-dim); }
+    .btn.ghost:hover { border-color: var(--gold); color: var(--gold); }
+
+    .seats { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 30px 0 10px; }
+    .seat {
+      min-width: 130px; padding: 16px 12px; border-radius: 8px;
+      background: var(--rink-mid); border: 1px solid var(--line);
+    }
+    .seat.filled { border-color: var(--gold-dim); background: var(--rink-light); }
+    .seat.me { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); }
+    .seat .who { font-size: 16px; font-weight: 500; }
+    .seat .tag { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--text-dim); text-transform: uppercase; margin-top: 4px; }
+    .seat.empty .who { color: var(--text-dim); font-style: italic; }
+
+    /* ── order strip ── */
+    .order-strip { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 4px; }
+    .order-chip {
+      font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px;
+      padding: 6px 12px; border-radius: 20px; background: var(--rink-mid);
+      border: 1px solid var(--line); color: var(--text-dim);
+    }
+    .order-chip.active { background: var(--gold); color: var(--rink); border-color: var(--gold); font-weight: 500; }
+
+    /* ── clock ── */
+    .clock { text-align: center; padding: 22px 16px; }
+    .clock .meta { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; }
+    .clock .who { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 2px; margin-top: 6px; }
+    .clock.mine .who { color: var(--gold); }
+    .clock .sub { color: var(--text-dim); font-size: 13px; margin-top: 2px; }
+
+    /* ── team board ── */
+    .board {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px; padding: 4px 0;
+    }
+    .team-btn {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+      background: var(--rink-mid); border: 1px solid var(--line); color: var(--text);
+      border-radius: 8px; padding: 12px; cursor: pointer; text-align: left;
+      font-family: 'DM Sans', sans-serif; transition: border-color .12s, background .12s;
+    }
+    .team-btn .abbr { font-family: 'DM Mono', monospace; font-weight: 500; letter-spacing: 1px; font-size: 14px; }
+    .team-btn .full { font-size: 11px; color: var(--text-dim); }
+    .team-btn:not(:disabled):hover { border-color: var(--gold); background: var(--rink-light); }
+    .team-btn:disabled { cursor: not-allowed; opacity: .38; }
+    .team-btn.taken { opacity: 1; background: transparent; border-style: dashed; }
+    .team-btn.taken .abbr { text-decoration: line-through; color: var(--text-dim); }
+    .team-btn.taken .owner { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--gold-dim); text-transform: uppercase; }
+    .team-btn.champ { border-color: var(--gold); }
+    .team-btn .crown { font-size: 10px; color: var(--gold); letter-spacing: 1px; font-family: 'DM Mono', monospace; }
+
+    /* ── rosters ── */
+    .rosters { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+    .roster { background: var(--rink-mid); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+    .roster.me { border-color: var(--gold-dim); }
+    .roster h3 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; margin-bottom: 8px; }
+    .roster .slot { font-family: 'DM Mono', monospace; font-size: 12px; padding: 3px 0; color: var(--text-dim); }
+    .roster .slot.filled { color: var(--text); }
+    .roster .slot .n { color: var(--text-dim); margin-right: 8px; }
+
+    .toast {
+      position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%);
+      background: var(--red); color: #fff; padding: 10px 18px; border-radius: 6px;
+      font-size: 14px; z-index: 50;
+    }
+
+    .done-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+    pre.json {
+      background: var(--rink-mid); border: 1px solid var(--line); border-radius: 8px;
+      padding: 14px; overflow-x: auto; font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--text-dim); max-height: 320px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+
+    <header class="section">
+      <div class="logo-area">
+        <h1>The ISC Draft</h1>
+        <div class="subtitle" id="season-sub">Connecting…</div>
+      </div>
+      <div class="header-right">
+        <a href="index.html" class="summary-link">← Tracker</a>
+        <div class="updated-badge"><span class="conn" id="conn">connecting</span></div>
+      </div>
+    </header>
+
+    <div id="stage"></div>
+  </div>
+
+  <script>
+    // ── config ───────────────────────────────────────────────────────────────
+    // ?worker= and ?room= exist so this page can be pointed at a local wrangler
+    // dev server during testing. Bump DEFAULT_ROOM alongside the season vars in
+    // worker/wrangler.jsonc when a new season is drafted.
+    const params = new URLSearchParams(location.search);
+    const WORKER = (params.get('worker') ?? 'https://isc-draft.rc0923.workers.dev').replace(/\/$/, '');
+    const DEFAULT_ROOM = '2026-27';
+    const ROOM = params.get('room') ?? DEFAULT_ROOM;
+    const SEAT_KEY = `isc-draft-seat:${ROOM}`;
+
+    const TEAM_NAMES = {
+      ANA: 'Anaheim Ducks', BOS: 'Boston Bruins', BUF: 'Buffalo Sabres',
+      CGY: 'Calgary Flames', CAR: 'Carolina Hurricanes', CHI: 'Chicago Blackhawks',
+      COL: 'Colorado Avalanche', CBJ: 'Columbus Blue Jackets', DAL: 'Dallas Stars',
+      DET: 'Detroit Red Wings', EDM: 'Edmonton Oilers', FLA: 'Florida Panthers',
+      LAK: 'Los Angeles Kings', MIN: 'Minnesota Wild', MTL: 'Montreal Canadiens',
+      NSH: 'Nashville Predators', NJD: 'New Jersey Devils', NYI: 'New York Islanders',
+      NYR: 'New York Rangers', OTT: 'Ottawa Senators', PHI: 'Philadelphia Flyers',
+      PIT: 'Pittsburgh Penguins', SJS: 'San Jose Sharks', SEA: 'Seattle Kraken',
+      STL: 'St. Louis Blues', TBL: 'Tampa Bay Lightning', TOR: 'Toronto Maple Leafs',
+      UTA: 'Utah Mammoth', VAN: 'Vancouver Canucks', VGK: 'Vegas Golden Knights',
+      WSH: 'Washington Capitals', WPG: 'Winnipeg Jets',
+    };
+
+    const ERRORS = {
+      room_full: 'The room is already full.',
+      name_taken: 'Somebody already took that name.',
+      name_required: 'Enter a name first.',
+      draft_already_started: 'The draft has already started.',
+      already_started: 'The draft has already started.',
+      room_not_full: 'Everyone has to join before the draft can start.',
+      not_your_turn: 'Not your pick.',
+      team_taken: 'That team is already gone.',
+      not_drafting: 'The draft is not running.',
+      unknown_team: 'Unknown team.',
+    };
+
+    // ── state ────────────────────────────────────────────────────────────────
+    let ws = null;
+    let STATE = null;
+    let myId = localStorage.getItem(SEAT_KEY);
+    let pendingName = null;
+    let retry = 0;
+    let heartbeat = null;
+
+    const el = id => document.getElementById(id);
+    const isMe = id => id && id === myId;
+
+    function toast(msg) {
+      document.querySelector('.toast')?.remove();
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3200);
+    }
+
+    function setConn(text, cls) {
+      const c = el('conn');
+      c.textContent = text;
+      c.className = 'conn ' + (cls ?? '');
+    }
+
+    // ── socket ───────────────────────────────────────────────────────────────
+    function connect() {
+      const url = WORKER.replace(/^http/, 'ws') + `/room/${encodeURIComponent(ROOM)}/ws`;
+      setConn('connecting');
+      ws = new WebSocket(url);
+
+      ws.addEventListener('open', () => {
+        retry = 0;
+        setConn('live', 'live');
+        // Reclaim our seat after a refresh or a dropped connection.
+        if (myId) send({ type: 'join', playerId: myId });
+        // Bare "ping" is answered by the Cloudflare runtime itself, so this
+        // keeps mobile networks from reaping an idle socket without ever
+        // waking the draft room.
+        clearInterval(heartbeat);
+        heartbeat = setInterval(() => {
+          if (ws?.readyState === WebSocket.OPEN) ws.send('ping');
+        }, 30000);
+      });
+
+      ws.addEventListener('message', ev => {
+        let m;
+        try { m = JSON.parse(ev.data); } catch { return; }
+        if (m.type === 'state') { STATE = m.state; render(); }
+        else if (m.type === 'joined') {
+          myId = m.playerId;
+          localStorage.setItem(SEAT_KEY, myId);
+          render();
+        }
+        else if (m.type === 'error') toast(ERRORS[m.error] ?? m.error);
+      });
+
+      ws.addEventListener('close', () => {
+        clearInterval(heartbeat);
+        setConn('offline', 'down');
+        // back off, but keep trying — phones drop sockets constantly
+        retry = Math.min(retry + 1, 6);
+        setTimeout(connect, 400 * 2 ** retry);
+      });
+
+      ws.addEventListener('error', () => ws.close());
+    }
+
+    function send(msg) {
+      if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
+      else toast('Not connected yet — hang on.');
+    }
+
+    // ── actions ──────────────────────────────────────────────────────────────
+    function doJoin() {
+      const input = el('name-input');
+      const name = input.value.trim();
+      if (!name) return toast('Enter a name first.');
+      pendingName = name;
+      send({ type: 'join', name });
+    }
+
+    function doStart() { send({ type: 'start' }); }
+    function doLeave() {
+      send({ type: 'leave', playerId: myId });
+      localStorage.removeItem(SEAT_KEY);
+      myId = null;
+    }
+    function doPick(team) { send({ type: 'pick', playerId: myId, team }); }
+
+    async function downloadState() {
+      try {
+        const res = await fetch(`${WORKER}/room/${encodeURIComponent(ROOM)}/export`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'state.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(a.href);
+      } catch (e) {
+        toast('Could not fetch the finished season: ' + e.message);
+      }
+    }
+
+    async function showJson() {
+      const res = await fetch(`${WORKER}/room/${encodeURIComponent(ROOM)}/export`);
+      const text = JSON.stringify(await res.json(), null, 2);
+      const pre = document.createElement('pre');
+      pre.className = 'json';
+      pre.textContent = text;
+      el('json-slot').replaceChildren(pre);
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('Copied to clipboard.');
+      } catch { /* clipboard blocked — the text is on screen regardless */ }
+    }
+
+    // ── render ───────────────────────────────────────────────────────────────
+    function render() {
+      if (!STATE) return;
+      el('season-sub').textContent =
+        `${STATE.season} · ${STATE.capacity} players · ${STATE.rounds} rounds`;
+
+      const stage = el('stage');
+      stage.replaceChildren(
+        STATE.phase === 'lobby' ? renderLobby()
+        : STATE.phase === 'drafting' ? renderDraft()
+        : renderDone()
+      );
+    }
+
+    function frag(...nodes) {
+      const f = document.createDocumentFragment();
+      nodes.filter(Boolean).forEach(n => f.appendChild(n));
+      return f;
+    }
+
+    function node(tag, cls, text) {
+      const n = document.createElement(tag);
+      if (cls) n.className = cls;
+      if (text != null) n.textContent = text;   // textContent, never innerHTML — names are user input
+      return n;
+    }
+
+    // -- lobby --
+    function renderLobby() {
+      const box = node('div', 'section lobby');
+      box.appendChild(node('h2', null, 'Draft Lobby'));
+
+      const joined = STATE.players.length;
+      const need = STATE.capacity - joined;
+      box.appendChild(node('div', 'hint',
+        need > 0
+          ? `Waiting for ${need} more player${need === 1 ? '' : 's'}…`
+          : 'Everyone is in. Draw the order and start.'));
+
+      const inRoom = STATE.players.some(p => isMe(p.id));
+
+      if (!inRoom) {
+        const form = node('div', 'join-form');
+        const input = document.createElement('input');
+        input.id = 'name-input';
+        input.placeholder = 'Your name';
+        input.maxLength = 20;
+        input.autocomplete = 'off';
+        if (pendingName) input.value = pendingName;
+        input.addEventListener('keydown', e => { if (e.key === 'Enter') doJoin(); });
+        const btn = node('button', 'btn', 'Join Draft');
+        btn.disabled = joined >= STATE.capacity;
+        btn.onclick = doJoin;
+        form.append(input, btn);
+        box.appendChild(form);
+        if (joined >= STATE.capacity) box.appendChild(node('div', 'hint', 'This room is full.'));
+      }
+
+      const seats = node('div', 'seats');
+      for (let i = 0; i < STATE.capacity; i++) {
+        const p = STATE.players[i];
+        const seat = node('div', 'seat ' + (p ? 'filled' : 'empty') + (p && isMe(p.id) ? ' me' : ''));
+        seat.appendChild(node('div', 'who', p ? p.name : 'Open seat'));
+        seat.appendChild(node('div', 'tag', p ? (isMe(p.id) ? 'you' : 'ready') : 'waiting'));
+        seats.appendChild(seat);
+      }
+      box.appendChild(seats);
+
+      if (inRoom) {
+        const actions = node('div', 'done-actions');
+        const start = node('button', 'btn', 'Draw Order & Start');
+        start.disabled = joined < STATE.capacity;
+        start.onclick = doStart;
+        const leave = node('button', 'btn ghost', 'Leave');
+        leave.onclick = doLeave;
+        actions.append(start, leave);
+        box.appendChild(actions);
+      }
+
+      return box;
+    }
+
+    // -- drafting --
+    function renderDraft() {
+      const wrap = document.createDocumentFragment();
+
+      // order + clock
+      const head = node('div', 'section');
+      const strip = node('div', 'order-strip');
+      STATE.order.forEach(o => {
+        const chip = node('div', 'order-chip' + (o.id === STATE.onClock ? ' active' : ''), o.name);
+        strip.appendChild(chip);
+      });
+      head.appendChild(strip);
+
+      const mine = isMe(STATE.onClock);
+      const clock = node('div', 'clock' + (mine ? ' mine' : ''));
+      const round = Math.floor(STATE.picks.length / STATE.capacity) + 1;
+      clock.appendChild(node('div', 'meta',
+        `Round ${round} of ${STATE.rounds} · Pick ${STATE.picks.length + 1} of ${STATE.totalPicks}`));
+      const onClockName = STATE.order.find(o => o.id === STATE.onClock)?.name ?? '—';
+      clock.appendChild(node('div', 'who', mine ? 'Your pick' : onClockName));
+      clock.appendChild(node('div', 'sub', mine ? 'Take a team below.' : 'on the clock'));
+      head.appendChild(clock);
+      wrap.appendChild(head);
+
+      // board
+      const boardSection = node('div', 'section');
+      boardSection.appendChild(node('div', 'section-label', 'Available Teams'));
+      const board = node('div', 'board');
+      const takenBy = {};
+      STATE.picks.forEach(p => takenBy[p.team] = p.name);
+
+      STATE.teams.forEach(abbr => {
+        const owner = takenBy[abbr];
+        const btn = node('button', 'team-btn' + (owner ? ' taken' : '') +
+          (abbr === STATE.startChampion ? ' champ' : ''));
+        btn.disabled = !!owner || !mine;
+        btn.appendChild(node('span', 'abbr', abbr));
+        btn.appendChild(node('span', 'full', TEAM_NAMES[abbr] ?? abbr));
+        if (abbr === STATE.startChampion && !owner) {
+          btn.appendChild(node('span', 'crown', 'HOLDS THE CUP'));
+        }
+        if (owner) btn.appendChild(node('span', 'owner', owner));
+        if (!owner) btn.onclick = () => doPick(abbr);
+        board.appendChild(btn);
+      });
+      boardSection.appendChild(board);
+      wrap.appendChild(boardSection);
+
+      wrap.appendChild(renderRosters());
+      return wrap;
+    }
+
+    function renderRosters() {
+      const section = node('div', 'section');
+      section.appendChild(node('div', 'section-label', 'Rosters'));
+      const grid = node('div', 'rosters');
+
+      STATE.order.forEach(o => {
+        const card = node('div', 'roster' + (isMe(o.id) ? ' me' : ''));
+        card.appendChild(node('h3', null, o.name + (isMe(o.id) ? ' (you)' : '')));
+        const picks = STATE.picks.filter(p => p.playerId === o.id);
+        for (let i = 0; i < STATE.rounds; i++) {
+          const p = picks[i];
+          const slot = node('div', 'slot' + (p ? ' filled' : ''));
+          slot.appendChild(node('span', 'n', String(i + 1).padStart(2, '0')));
+          slot.appendChild(document.createTextNode(p ? p.team : '—'));
+          card.appendChild(slot);
+        }
+        grid.appendChild(card);
+      });
+
+      section.appendChild(grid);
+      return section;
+    }
+
+    // -- done --
+    function renderDone() {
+      const wrap = document.createDocumentFragment();
+
+      const head = node('div', 'section lobby');
+      head.appendChild(node('h2', null, 'Draft Complete'));
+      head.appendChild(node('div', 'hint',
+        `All ${STATE.totalPicks} teams are spoken for. ${TEAM_NAMES[STATE.startChampion] ?? STATE.startChampion} open the season holding the cup.`));
+
+      const actions = node('div', 'done-actions');
+      const dl = node('button', 'btn', 'Download state.json');
+      dl.onclick = downloadState;
+      const show = node('button', 'btn ghost', 'Show / copy JSON');
+      show.onclick = showJson;
+      actions.append(dl, show);
+      head.appendChild(actions);
+
+      const slot = node('div');
+      slot.id = 'json-slot';
+      head.appendChild(slot);
+      wrap.appendChild(head);
+
+      wrap.appendChild(renderRosters());
+      return wrap;
+    }
+
+    connect();
+  </script>
+</body>
+
+</html>

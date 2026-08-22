@@ -1,0 +1,43 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "isc-draft",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-22",
+
+  // Logs for `wrangler tail` and the dashboard. Traffic here is a handful of
+  // drafts a year, so there is no reason to sample anything out.
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+
+  // One Durable Object per room holds the live draft.
+  // new_sqlite_classes (not new_classes) is what the Cloudflare free plan supports.
+  "durable_objects": {
+    "bindings": [
+      { "name": "DRAFT_ROOM", "class_name": "DraftRoom" }
+    ]
+  },
+  "migrations": [
+    { "tag": "v1", "new_sqlite_classes": ["DraftRoom"] }
+  ],
+
+  "vars": {
+    // The season being drafted. Update these four each year, then redeploy.
+    "SEASON": "2026-27",
+    "SEASON_START": "2026-09-29",
+    "SEASON_END": "2027-04-10",
+    "START_CHAMPION": "CAR",
+
+    // Players in the draft. Must divide 32 evenly: 2, 4 or 8.
+    "CAPACITY": "4",
+
+    // Origins allowed to call the room over HTTP. The WebSocket is not
+    // CORS-gated, but /export and the JSON snapshot are.
+    "ALLOWED_ORIGINS": "https://rc0923.github.io,http://localhost:8123"
+  }
+
+  // ADMIN_TOKEN is a secret, not a var. Set it once with:
+  //   npx wrangler secret put ADMIN_TOKEN
+  // It gates POST /room/:name/reset, which wipes a room back to an empty lobby.
+}
