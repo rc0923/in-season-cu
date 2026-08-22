@@ -275,8 +275,11 @@ export class DraftRoom extends DurableObject {
     return { ok: true, playerId: id };
   }
 
-  addBot(s) {
-    if (!s.practice) return { ok: false, error: 'bots_practice_only' };
+  addBot(s, role) {
+    // Practice rooms are open to bots. Elsewhere only an admin may add one, so
+    // a full-fidelity rehearsal (password gate included) is possible without
+    // handing every player a way to stuff the real draft with bots.
+    if (!s.practice && role !== 'admin') return { ok: false, error: 'bots_practice_only' };
     if (s.phase !== 'lobby') return { ok: false, error: 'draft_already_started' };
     if (s.players.length >= s.capacity) return { ok: false, error: 'room_full' };
 
@@ -531,7 +534,7 @@ export class DraftRoom extends DurableObject {
     switch (msg.type) {
       case 'join':    result = this.join(s, msg, role); break;
       case 'leave':   result = this.leave(s, msg.playerId); break;
-      case 'addBot':  result = this.addBot(s); break;
+      case 'addBot':  result = this.addBot(s, role); break;
       case 'start':   result = this.start(s); break;
       case 'pick':    result = this.pick(s, msg.playerId, msg.team); break;
 

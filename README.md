@@ -180,9 +180,15 @@ carries on if you reload the page or your phone locks. Any room name starting
 with `practice` works — `?room=practice-2`, `?room=practice-phones` — which
 means you can leave old rehearsals lying around without them getting in the way.
 
-**Bots are refused in any room not named `practice…`**, so there is no way to
-accidentally fill the real draft with them. A practice room can still export a
-`state.json`; just do not commit it.
+A **player** cannot add bots outside a practice room, so the real draft cannot
+be stuffed with them. An **admin** can add them anywhere, which is what makes a
+full-fidelity rehearsal possible — password gate, real room, bots to fill the
+seats. Outside a practice room this asks for confirmation first, and the room
+then carries a red **Rehearsal** banner naming how many bots are in it for as
+long as any remain. Remove them with the ✕ on their seats, or reset the room.
+
+Either kind of room can still export a `state.json`; just do not commit one
+that had bots in it.
 
 ### The draft worker
 

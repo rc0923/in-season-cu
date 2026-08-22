@@ -56,6 +56,8 @@
       text-transform: uppercase; color: var(--rink); background: var(--gold);
       padding: 3px 8px; border-radius: 4px; font-weight: 500;
     }
+    .bots-warning { background: rgba(230,57,70,0.08); border-color: var(--red); }
+    .pb-tag.warn { background: var(--red); color: #fff; }
 
     /* ── lobby ── */
     .lobby { text-align: center; padding: 40px 24px; }
@@ -208,7 +210,7 @@
       already_started: 'The draft has already started.',
       room_not_full: 'Everyone has to join before the draft can start.',
       not_your_turn: 'Not your pick.',
-      bots_practice_only: 'Bots are only allowed in a practice room.',
+      bots_practice_only: 'Only an admin can add bots outside a practice room.',
       team_taken: 'That team is already gone.',
       not_drafting: 'The draft is not running.',
       unknown_team: 'Unknown team.',
@@ -343,7 +345,13 @@
     }
 
     function doStart() { send({ type: 'start' }); }
-    function doAddBot() { send({ type: 'addBot' }); }
+    function doAddBot() {
+      // A bot in a real room is a rehearsal aid that must never be mistaken for
+      // a player, so adding one outside a practice room asks first.
+      if (!STATE?.practice &&
+          !confirm('This is not a practice room. Add a bot for rehearsal?')) return;
+      send({ type: 'addBot' });
+    }
 
     function doAuth() {
       const input = el('pw-input');
@@ -436,11 +444,21 @@
         : STATE.phase === 'drafting' ? renderDraft()
         : renderDone();
 
+      const bots = STATE.players.filter(p => p.bot).length;
+
       if (STATE.practice) {
         const banner = node('div', 'practice-banner');
         banner.appendChild(node('span', 'pb-tag', 'Practice'));
         banner.appendChild(document.createTextNode(
           ' This is a rehearsal room — nothing here affects the real draft.'));
+        stage.replaceChildren(banner, body);
+      } else if (bots) {
+        // Bots outside a practice room mean somebody is rehearsing. Say so
+        // loudly and permanently, so this is never mistaken for the real draft.
+        const banner = node('div', 'practice-banner bots-warning');
+        banner.appendChild(node('span', 'pb-tag warn', 'Rehearsal'));
+        banner.appendChild(document.createTextNode(
+          ` This room has ${bots} bot${bots === 1 ? '' : 's'} in it. Do not commit its state.json.`));
         stage.replaceChildren(banner, body);
       } else {
         stage.replaceChildren(body);
@@ -548,8 +566,8 @@
         start.onclick = doStart;
         actions.appendChild(start);
 
-        // Practice rooms can be filled out with bots so one person can rehearse.
-        if (STATE.practice && joined < STATE.capacity) {
+        // Practice rooms can be filled with bots by anyone; elsewhere only an admin.
+        if ((STATE.practice || isAdmin()) && joined < STATE.capacity) {
           const bot = node('button', 'btn ghost', 'Add a bot');
           bot.onclick = doAddBot;
           actions.appendChild(bot);
