@@ -147,6 +147,35 @@ Admin actions are authorised from the connection's own role on the server, not
 from anything the page claims, so a player cannot invoke them by crafting a
 message.
 
+### Running the tests
+
+```
+cd worker
+npm test                    every suite against a local worker
+npm test -- auth signout    just the named ones
+VERBOSE=1 npm test          full output from whatever failed
+```
+
+The runner starts `wrangler dev` and a static file server on free ports, runs
+each suite, then stops both. It needs `worker/.dev.vars` to supply
+`DRAFT_PASSWORD` and `ADMIN_PASSWORD` for local runs.
+
+| Suite | Covers |
+| --- | --- |
+| `auth` | the password gate, brute-force cutoff, player vs admin, HTTP endpoints |
+| `signout` | that signing out revokes the role on the server, not just in the page |
+| `adminbots` | only an admin may seat a bot, in any room |
+| `startover` | anyone may reset a practice room; only an admin elsewhere |
+| `drafttest` | a whole 32-pick draft: snake order, turn enforcement, the export |
+| `reconnect` | seat reclaim after a drop, in the lobby and mid-draft |
+| `practice` | a solo rehearsal against bots |
+| `newbits` | heartbeat auto-response and the fairness of the random draw |
+| `uitest` | draft.html driven through a real DOM, gate to finished draft |
+| `downloadperm` | two browser sessions: only the admin is offered the download |
+
+`npm run verify` is the different one: it checks a **deployed** worker rather
+than a local one, and is what to run after deploying or rotating passwords.
+
 ### Checking the room is healthy
 
 Before a real draft — and after rotating passwords or deploying — run:
