@@ -34,7 +34,7 @@
 
     // Origins allowed to call the room over HTTP. The WebSocket is not
     // CORS-gated, but /export and the JSON snapshot are.
-    "ALLOWED_ORIGINS": "https://rc0923.github.io,http://localhost:8123"
+    "ALLOWED_ORIGINS": "https://brendanslittlecup.com,https://www.brendanslittlecup.com,https://rc0923.github.io,http://localhost:8123"
   }
 
   // ADMIN_TOKEN is a secret, not a var. Set it once with:
