@@ -1,8 +1,8 @@
 {
-  "champion": "CAR",
+  "champion": "FLA",
   "startingChampion": "CAR",
   "lastUpdated": "2026-09-29",
-  "lastDayTick": "2026-09-29",
+  "lastDayTick": "2026-09-30",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -12,7 +12,7 @@
       "days": 0,
       "reigns": 0,
       "wins": 0,
-      "losses": 0,
+      "losses": 1,
       "streak": 0,
       "teams": [
         {
@@ -20,7 +20,7 @@
           "days": 0,
           "reigns": 0,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
         },
@@ -91,20 +91,20 @@
     },
     {
       "name": "Tyler",
-      "days": 0,
-      "reigns": 0,
+      "days": 1,
+      "reigns": 1,
       "wins": 0,
       "losses": 0,
       "streak": 0,
       "teams": [
         {
           "abbr": "FLA",
-          "days": 0,
-          "reigns": 0,
+          "days": 1,
+          "reigns": 1,
           "wins": 0,
           "losses": 0,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         },
         {
           "abbr": "EDM",
@@ -336,5 +336,14 @@
       ]
     }
   ],
-  "gameLog": []
+  "gameLog": [
+    {
+      "num": 1,
+      "date": "2026-09-29",
+      "visitor": "FLA",
+      "home": "CAR",
+      "score": "1-0",
+      "nhlGameId": "2026020001"
+    }
+  ]
 }
