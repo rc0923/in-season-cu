@@ -2,7 +2,7 @@
   "champion": "FLA",
   "startingChampion": "CAR",
   "lastUpdated": "2026-09-29",
-  "lastDayTick": "2026-10-01",
+  "lastDayTick": "2026-10-02",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -91,7 +91,7 @@
     },
     {
       "name": "Tyler",
-      "days": 2,
+      "days": 3,
       "reigns": 1,
       "wins": 0,
       "losses": 0,
@@ -99,7 +99,7 @@
       "teams": [
         {
           "abbr": "FLA",
-          "days": 2,
+          "days": 3,
           "reigns": 1,
           "wins": 0,
           "losses": 0,
