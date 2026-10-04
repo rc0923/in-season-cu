@@ -1,19 +1,19 @@
 {
   "champion": "SJS",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-01",
-  "lastDayTick": "2026-10-03",
+  "lastUpdated": "2026-10-03",
+  "lastDayTick": "2026-10-04",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
   "players": [
     {
       "name": "Brendan",
-      "days": 1,
+      "days": 2,
       "reigns": 1,
-      "wins": 0,
+      "wins": 1,
       "losses": 1,
-      "streak": 0,
+      "streak": 2,
       "teams": [
         {
           "abbr": "CAR",
@@ -53,12 +53,12 @@
         },
         {
           "abbr": "SJS",
-          "days": 1,
+          "days": 2,
           "reigns": 1,
-          "wins": 0,
+          "wins": 1,
           "losses": 0,
-          "longestStreak": 0,
-          "currentStreak": 1
+          "longestStreak": 2,
+          "currentStreak": 2
         },
         {
           "abbr": "CBJ",
@@ -352,6 +352,14 @@
       "home": "SJS",
       "score": "3-4",
       "nhlGameId": "2026020016"
+    },
+    {
+      "num": 3,
+      "date": "2026-10-03",
+      "visitor": "LAK",
+      "home": "SJS",
+      "score": "4-5",
+      "nhlGameId": "2026020034"
     }
   ]
 }
