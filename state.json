@@ -2,14 +2,14 @@
   "champion": "SJS",
   "startingChampion": "CAR",
   "lastUpdated": "2026-10-03",
-  "lastDayTick": "2026-10-04",
+  "lastDayTick": "2026-10-05",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
   "players": [
     {
       "name": "Brendan",
-      "days": 2,
+      "days": 3,
       "reigns": 1,
       "wins": 1,
       "losses": 1,
@@ -53,7 +53,7 @@
         },
         {
           "abbr": "SJS",
-          "days": 2,
+          "days": 3,
           "reigns": 1,
           "wins": 1,
           "losses": 0,
