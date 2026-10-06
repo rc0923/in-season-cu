@@ -1,8 +1,8 @@
 {
-  "champion": "SJS",
+  "champion": "DAL",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-03",
-  "lastDayTick": "2026-10-05",
+  "lastUpdated": "2026-10-05",
+  "lastDayTick": "2026-10-06",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -12,7 +12,7 @@
       "days": 3,
       "reigns": 1,
       "wins": 1,
-      "losses": 1,
+      "losses": 2,
       "streak": 2,
       "teams": [
         {
@@ -56,9 +56,9 @@
           "days": 3,
           "reigns": 1,
           "wins": 1,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 2,
-          "currentStreak": 2
+          "currentStreak": 0
         },
         {
           "abbr": "CBJ",
@@ -173,8 +173,8 @@
     },
     {
       "name": "Rob",
-      "days": 0,
-      "reigns": 0,
+      "days": 1,
+      "reigns": 1,
       "wins": 0,
       "losses": 0,
       "streak": 0,
@@ -190,12 +190,12 @@
         },
         {
           "abbr": "DAL",
-          "days": 0,
-          "reigns": 0,
+          "days": 1,
+          "reigns": 1,
           "wins": 0,
           "losses": 0,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         },
         {
           "abbr": "NYR",
@@ -360,6 +360,14 @@
       "home": "SJS",
       "score": "4-5",
       "nhlGameId": "2026020034"
+    },
+    {
+      "num": 4,
+      "date": "2026-10-05",
+      "visitor": "SJS",
+      "home": "DAL",
+      "score": "0-5",
+      "nhlGameId": "2026020043"
     }
   ]
 }
