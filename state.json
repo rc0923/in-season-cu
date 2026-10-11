@@ -1,8 +1,8 @@
 {
-  "champion": "DAL",
+  "champion": "PIT",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-08",
-  "lastDayTick": "2026-10-10",
+  "lastUpdated": "2026-10-10",
+  "lastDayTick": "2026-10-11",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -91,8 +91,8 @@
     },
     {
       "name": "Tyler",
-      "days": 3,
-      "reigns": 1,
+      "days": 4,
+      "reigns": 2,
       "wins": 0,
       "losses": 1,
       "streak": 0,
@@ -153,12 +153,12 @@
         },
         {
           "abbr": "PIT",
-          "days": 0,
-          "reigns": 0,
+          "days": 1,
+          "reigns": 1,
           "wins": 0,
           "losses": 0,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         },
         {
           "abbr": "SEA",
@@ -176,7 +176,7 @@
       "days": 5,
       "reigns": 1,
       "wins": 1,
-      "losses": 0,
+      "losses": 1,
       "streak": 2,
       "teams": [
         {
@@ -193,9 +193,9 @@
           "days": 5,
           "reigns": 1,
           "wins": 1,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 2,
-          "currentStreak": 2
+          "currentStreak": 0
         },
         {
           "abbr": "NYR",
@@ -376,6 +376,14 @@
       "home": "BUF",
       "score": "4-0",
       "nhlGameId": "2026020057"
+    },
+    {
+      "num": 6,
+      "date": "2026-10-10",
+      "visitor": "DAL",
+      "home": "PIT",
+      "score": "1-2",
+      "nhlGameId": "2026020077"
     }
   ]
 }
