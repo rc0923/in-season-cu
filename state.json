@@ -1,8 +1,8 @@
 {
-  "champion": "PIT",
+  "champion": "CHI",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-10",
-  "lastDayTick": "2026-10-13",
+  "lastUpdated": "2026-10-13",
+  "lastDayTick": "2026-10-14",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -94,7 +94,7 @@
       "days": 6,
       "reigns": 2,
       "wins": 0,
-      "losses": 1,
+      "losses": 2,
       "streak": 0,
       "teams": [
         {
@@ -156,9 +156,9 @@
           "days": 3,
           "reigns": 1,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
-          "currentStreak": 1
+          "currentStreak": 0
         },
         {
           "abbr": "SEA",
@@ -255,8 +255,8 @@
     },
     {
       "name": "Justin",
-      "days": 0,
-      "reigns": 0,
+      "days": 1,
+      "reigns": 1,
       "wins": 0,
       "losses": 0,
       "streak": 0,
@@ -317,12 +317,12 @@
         },
         {
           "abbr": "CHI",
-          "days": 0,
-          "reigns": 0,
+          "days": 1,
+          "reigns": 1,
           "wins": 0,
           "losses": 0,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         },
         {
           "abbr": "CGY",
@@ -384,6 +384,14 @@
       "home": "PIT",
       "score": "1-2",
       "nhlGameId": "2026020077"
+    },
+    {
+      "num": 7,
+      "date": "2026-10-13",
+      "visitor": "PIT",
+      "home": "CHI",
+      "score": "3-5",
+      "nhlGameId": "2026020098"
     }
   ]
 }
