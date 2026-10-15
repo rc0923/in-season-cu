@@ -2,7 +2,7 @@
   "champion": "CHI",
   "startingChampion": "CAR",
   "lastUpdated": "2026-10-13",
-  "lastDayTick": "2026-10-14",
+  "lastDayTick": "2026-10-15",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -255,7 +255,7 @@
     },
     {
       "name": "Justin",
-      "days": 1,
+      "days": 2,
       "reigns": 1,
       "wins": 0,
       "losses": 0,
@@ -317,7 +317,7 @@
         },
         {
           "abbr": "CHI",
-          "days": 1,
+          "days": 2,
           "reigns": 1,
           "wins": 0,
           "losses": 0,
