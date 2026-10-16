@@ -1,8 +1,8 @@
 {
   "champion": "CHI",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-13",
-  "lastDayTick": "2026-10-15",
+  "lastUpdated": "2026-10-15",
+  "lastDayTick": "2026-10-16",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -255,11 +255,11 @@
     },
     {
       "name": "Justin",
-      "days": 2,
+      "days": 3,
       "reigns": 1,
-      "wins": 0,
+      "wins": 1,
       "losses": 0,
-      "streak": 0,
+      "streak": 2,
       "teams": [
         {
           "abbr": "WSH",
@@ -317,12 +317,12 @@
         },
         {
           "abbr": "CHI",
-          "days": 2,
+          "days": 3,
           "reigns": 1,
-          "wins": 0,
+          "wins": 1,
           "losses": 0,
-          "longestStreak": 0,
-          "currentStreak": 1
+          "longestStreak": 2,
+          "currentStreak": 2
         },
         {
           "abbr": "CGY",
@@ -392,6 +392,14 @@
       "home": "CHI",
       "score": "3-5",
       "nhlGameId": "2026020098"
+    },
+    {
+      "num": 8,
+      "date": "2026-10-15",
+      "visitor": "WPG",
+      "home": "CHI",
+      "score": "3-4",
+      "nhlGameId": "2026020114"
     }
   ]
 }
