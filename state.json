@@ -1,8 +1,8 @@
 {
   "champion": "DAL",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-17",
-  "lastDayTick": "2026-10-20",
+  "lastUpdated": "2026-10-20",
+  "lastDayTick": "2026-10-21",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -173,9 +173,9 @@
     },
     {
       "name": "Rob",
-      "days": 8,
+      "days": 9,
       "reigns": 2,
-      "wins": 1,
+      "wins": 2,
       "losses": 1,
       "streak": 2,
       "teams": [
@@ -190,12 +190,12 @@
         },
         {
           "abbr": "DAL",
-          "days": 8,
+          "days": 9,
           "reigns": 2,
-          "wins": 1,
+          "wins": 2,
           "losses": 1,
           "longestStreak": 2,
-          "currentStreak": 1
+          "currentStreak": 2
         },
         {
           "abbr": "NYR",
@@ -408,6 +408,14 @@
       "home": "CHI",
       "score": "4-0",
       "nhlGameId": "2026020130"
+    },
+    {
+      "num": 10,
+      "date": "2026-10-20",
+      "visitor": "BOS",
+      "home": "DAL",
+      "score": "2-3",
+      "nhlGameId": "2026020147"
     }
   ]
 }
