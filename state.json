@@ -2,7 +2,7 @@
   "champion": "DAL",
   "startingChampion": "CAR",
   "lastUpdated": "2026-10-20",
-  "lastDayTick": "2026-10-21",
+  "lastDayTick": "2026-10-22",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -173,7 +173,7 @@
     },
     {
       "name": "Rob",
-      "days": 9,
+      "days": 10,
       "reigns": 2,
       "wins": 2,
       "losses": 1,
@@ -190,7 +190,7 @@
         },
         {
           "abbr": "DAL",
-          "days": 9,
+          "days": 10,
           "reigns": 2,
           "wins": 2,
           "losses": 1,
