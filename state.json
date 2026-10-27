@@ -9,9 +9,9 @@
   "players": [
     {
       "name": "Brendan",
-      "days": 3,
+      "days": 4,
       "reigns": 1,
-      "wins": 1,
+      "wins": 2,
       "losses": 2,
       "streak": 2,
       "teams": [
@@ -53,9 +53,9 @@
         },
         {
           "abbr": "SJS",
-          "days": 3,
+          "days": 4,
           "reigns": 1,
-          "wins": 1,
+          "wins": 2,
           "losses": 1,
           "longestStreak": 2,
           "currentStreak": 0
@@ -91,17 +91,17 @@
     },
     {
       "name": "Tyler",
-      "days": 6,
+      "days": 5,
       "reigns": 2,
-      "wins": 0,
+      "wins": 2,
       "losses": 2,
       "streak": 0,
       "teams": [
         {
           "abbr": "FLA",
-          "days": 3,
+          "days": 2,
           "reigns": 1,
-          "wins": 0,
+          "wins": 1,
           "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
@@ -155,7 +155,7 @@
           "abbr": "PIT",
           "days": 3,
           "reigns": 1,
-          "wins": 0,
+          "wins": 1,
           "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
@@ -175,8 +175,8 @@
       "name": "Rob",
       "days": 15,
       "reigns": 2,
-      "wins": 4,
-      "losses": 1,
+      "wins": 6,
+      "losses": 5,
       "streak": 4,
       "teams": [
         {
@@ -192,7 +192,7 @@
           "abbr": "DAL",
           "days": 15,
           "reigns": 2,
-          "wins": 4,
+          "wins": 6,
           "losses": 1,
           "longestStreak": 4,
           "currentStreak": 4
@@ -211,7 +211,7 @@
           "days": 0,
           "reigns": 0,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
         },
@@ -229,7 +229,7 @@
           "days": 0,
           "reigns": 0,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
         },
@@ -238,7 +238,7 @@
           "days": 0,
           "reigns": 0,
           "wins": 0,
-          "losses": 0,
+          "losses": 2,
           "longestStreak": 0,
           "currentStreak": 0
         },
@@ -257,8 +257,8 @@
       "name": "Justin",
       "days": 4,
       "reigns": 1,
-      "wins": 1,
-      "losses": 1,
+      "wins": 2,
+      "losses": 3,
       "streak": 2,
       "teams": [
         {
@@ -293,7 +293,7 @@
           "days": 0,
           "reigns": 0,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
         },
@@ -302,7 +302,7 @@
           "days": 0,
           "reigns": 0,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
         },
@@ -319,7 +319,7 @@
           "abbr": "CHI",
           "days": 4,
           "reigns": 1,
-          "wins": 1,
+          "wins": 2,
           "losses": 1,
           "longestStreak": 2,
           "currentStreak": 0

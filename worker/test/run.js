@@ -18,7 +18,7 @@ const HERE = __dirname;
 const WORKER_DIR = path.resolve(HERE, '..');
 
 // Node suites, then the two that drive a real DOM.
-const NODE_SUITES = ['auth', 'signout', 'adminbots', 'startover', 'drafttest', 'reconnect', 'practice', 'newbits'];
+const NODE_SUITES = ['updater', 'auth', 'signout', 'adminbots', 'startover', 'drafttest', 'reconnect', 'practice', 'newbits'];
 const DOM_SUITES = ['uitest', 'downloadperm'];
 
 const wanted = process.argv.slice(2).filter(a => !a.startsWith('-'));

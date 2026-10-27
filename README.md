@@ -162,6 +162,7 @@ each suite, then stops both. It needs `worker/.dev.vars` to supply
 
 | Suite | Covers |
 | --- | --- |
+| `updater` | the cup bot: replays the season on the real cron schedule and checks every count, whatever time games finish |
 | `auth` | the password gate, brute-force cutoff, player vs admin, HTTP endpoints |
 | `signout` | that signing out revokes the role on the server, not just in the page |
 | `adminbots` | only an admin may seat a bot, in any room |

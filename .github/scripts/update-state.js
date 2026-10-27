@@ -11,16 +11,20 @@
 
 const fs = require('fs');
 const path = require('path');
+const http = require('http');
 const https = require('https');
 
-const STATE_PATH = path.join(__dirname, '../../state.json');
-const NHL_BASE = 'https://api-web.nhle.com/v1';
+// Both overridable so the test suite can run this against a scratch state file
+// and a mock schedule server. Production sets neither.
+const STATE_PATH = process.env.ISC_STATE_PATH ?? path.join(__dirname, '../../state.json');
+const NHL_BASE = process.env.ISC_NHL_BASE ?? 'https://api-web.nhle.com/v1';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 function get(url) {
+  const client = url.startsWith('http:') ? http : https;
   return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
+    client.get(url, (res) => {
       let data = '';
       res.on('data', c => data += c);
       res.on('end', () => {
@@ -104,7 +108,9 @@ async function main() {
     process.exit(0); // exit cleanly — don't crash the action
   }
 
-  const games = schedule?.gameWeek?.flatMap(w => w.games) ?? [];
+  // Keep each game's own date: the cup changes hands on the day the game is
+  // played, which is not necessarily the day the result is first seen.
+  const games = schedule?.gameWeek?.flatMap(w => (w.games ?? []).map(g => ({ ...g, date: w.date }))) ?? [];
   console.log(`Found ${games.length} games on schedule today`);
 
   // Find a FINAL game featuring the champion
@@ -127,6 +133,7 @@ async function main() {
   }
 
   const gameId = String(champGame.id);
+  const gameDate = champGame.date ?? today();
 
   // Check if we already logged this game (by NHL game id stored in a field)
   const alreadyLoggedById = state.gameLog.some(g => g.nhlGameId === gameId);
@@ -162,17 +169,27 @@ async function main() {
   // Add game to log
   state.gameLog.push({
     num: nextGameNum,
-    date: today(),
+    date: gameDate,
     visitor: away.abbrev,
     home: home.abbrev,
     score: `${awayScore}-${homeScore}`,
     nhlGameId: gameId
   });
 
+  // Every cup game counts once each way: a win for whoever won it and a loss
+  // for whoever lost it — whether that is a defence, a successful challenge
+  // (the challenger's win), or a failed one (the challenger's loss).
+  const oppOwner = ownerOf(state, oppAbbr);
+  const oppTeamStat = oppOwner ? teamStatOf(oppOwner, oppAbbr) : null;
+  if (oppTeamStat) {
+    if (champWon) { oppTeamStat.losses += 1; oppOwner.losses += 1; }
+    else          { oppTeamStat.wins += 1;   oppOwner.wins += 1; }
+  }
+
   // Update champion team's owner stats
   const champOwner = ownerOf(state, champion);
+  const champTeamStat = champOwner ? teamStatOf(champOwner, champion) : null;
   if (champOwner) {
-    const champTeamStat = teamStatOf(champOwner, champion);
     if (champTeamStat) {
       if (champWon) {
         champTeamStat.wins += 1;
@@ -208,6 +225,21 @@ async function main() {
         newTeamStat.reigns += 1;
         newTeamStat.currentStreak = 1;
         newOwner.reigns += 1;
+
+        // The new holder owns the cup from the game's date. If the result came
+        // in after the daily tick already credited those days to the outgoing
+        // holder (a late West Coast finish, say), move them across.
+        const misattributed = Math.min(
+          daysBetween(gameDate, state.lastDayTick ?? gameDate),
+          champTeamStat?.days ?? 0,
+        );
+        if (misattributed > 0 && champTeamStat) {
+          console.log(`Moving ${misattributed} day(s) from ${champion} to ${newChampion} (cup changed hands ${gameDate})`);
+          champTeamStat.days -= misattributed;
+          champOwner.days -= misattributed;
+          newTeamStat.days += misattributed;
+          newOwner.days += misattributed;
+        }
       }
     }
   } else {
