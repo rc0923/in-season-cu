@@ -1,17 +1,17 @@
 {
-  "champion": "DAL",
+  "champion": "NJD",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-25",
-  "lastDayTick": "2026-10-27",
+  "lastUpdated": "2026-10-27",
+  "lastDayTick": "2026-10-28",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
   "players": [
     {
       "name": "Brendan",
-      "days": 4,
-      "reigns": 1,
-      "wins": 2,
+      "days": 5,
+      "reigns": 2,
+      "wins": 3,
       "losses": 2,
       "streak": 2,
       "teams": [
@@ -44,12 +44,12 @@
         },
         {
           "abbr": "NJD",
-          "days": 0,
-          "reigns": 0,
-          "wins": 0,
+          "days": 1,
+          "reigns": 1,
+          "wins": 1,
           "losses": 0,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         },
         {
           "abbr": "SJS",
@@ -176,7 +176,7 @@
       "days": 15,
       "reigns": 2,
       "wins": 6,
-      "losses": 5,
+      "losses": 6,
       "streak": 4,
       "teams": [
         {
@@ -193,9 +193,9 @@
           "days": 15,
           "reigns": 2,
           "wins": 6,
-          "losses": 1,
+          "losses": 2,
           "longestStreak": 4,
-          "currentStreak": 4
+          "currentStreak": 0
         },
         {
           "abbr": "NYR",
@@ -432,6 +432,14 @@
       "home": "DAL",
       "score": "3-6",
       "nhlGameId": "2026020181"
+    },
+    {
+      "num": 13,
+      "date": "2026-10-27",
+      "visitor": "NJD",
+      "home": "DAL",
+      "score": "5-1",
+      "nhlGameId": "2026020193"
     }
   ]
 }
