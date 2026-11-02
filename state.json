@@ -2,7 +2,7 @@
   "champion": "COL",
   "startingChampion": "CAR",
   "lastUpdated": "2026-10-31",
-  "lastDayTick": "2026-11-01",
+  "lastDayTick": "2026-11-02",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -173,7 +173,7 @@
     },
     {
       "name": "Rob",
-      "days": 19,
+      "days": 20,
       "reigns": 3,
       "wins": 8,
       "losses": 6,
@@ -181,7 +181,7 @@
       "teams": [
         {
           "abbr": "COL",
-          "days": 4,
+          "days": 5,
           "reigns": 1,
           "wins": 2,
           "losses": 0,
