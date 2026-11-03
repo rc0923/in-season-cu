@@ -1,8 +1,8 @@
 {
   "champion": "COL",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-10-31",
-  "lastDayTick": "2026-11-02",
+  "lastUpdated": "2026-11-02",
+  "lastDayTick": "2026-11-03",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -173,20 +173,20 @@
     },
     {
       "name": "Rob",
-      "days": 20,
+      "days": 21,
       "reigns": 3,
-      "wins": 8,
+      "wins": 9,
       "losses": 6,
       "streak": 4,
       "teams": [
         {
           "abbr": "COL",
-          "days": 5,
+          "days": 6,
           "reigns": 1,
-          "wins": 2,
+          "wins": 3,
           "losses": 0,
-          "longestStreak": 2,
-          "currentStreak": 2
+          "longestStreak": 3,
+          "currentStreak": 3
         },
         {
           "abbr": "DAL",
@@ -258,7 +258,7 @@
       "days": 4,
       "reigns": 1,
       "wins": 2,
-      "losses": 4,
+      "losses": 5,
       "streak": 2,
       "teams": [
         {
@@ -320,7 +320,7 @@
           "days": 4,
           "reigns": 1,
           "wins": 2,
-          "losses": 1,
+          "losses": 2,
           "longestStreak": 2,
           "currentStreak": 0
         },
@@ -456,6 +456,14 @@
       "home": "COL",
       "score": "2-5",
       "nhlGameId": "2026020226"
+    },
+    {
+      "num": 16,
+      "date": "2026-11-02",
+      "visitor": "COL",
+      "home": "CHI",
+      "score": "5-2",
+      "nhlGameId": "2026020234"
     }
   ]
 }
