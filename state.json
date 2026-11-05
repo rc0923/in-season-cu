@@ -2,14 +2,14 @@
   "champion": "CBJ",
   "startingChampion": "CAR",
   "lastUpdated": "2026-11-03",
-  "lastDayTick": "2026-11-04",
+  "lastDayTick": "2026-11-05",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
   "players": [
     {
       "name": "Brendan",
-      "days": 6,
+      "days": 7,
       "reigns": 3,
       "wins": 4,
       "losses": 3,
@@ -62,7 +62,7 @@
         },
         {
           "abbr": "CBJ",
-          "days": 1,
+          "days": 2,
           "reigns": 1,
           "wins": 1,
           "losses": 0,
