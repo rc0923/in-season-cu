@@ -1,17 +1,17 @@
 {
   "champion": "CBJ",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-11-03",
-  "lastDayTick": "2026-11-05",
+  "lastUpdated": "2026-11-05",
+  "lastDayTick": "2026-11-06",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
   "players": [
     {
       "name": "Brendan",
-      "days": 7,
+      "days": 8,
       "reigns": 3,
-      "wins": 4,
+      "wins": 5,
       "losses": 3,
       "streak": 2,
       "teams": [
@@ -62,12 +62,12 @@
         },
         {
           "abbr": "CBJ",
-          "days": 2,
+          "days": 3,
           "reigns": 1,
-          "wins": 1,
+          "wins": 2,
           "losses": 0,
-          "longestStreak": 0,
-          "currentStreak": 1
+          "longestStreak": 2,
+          "currentStreak": 2
         },
         {
           "abbr": "DET",
@@ -176,7 +176,7 @@
       "days": 21,
       "reigns": 3,
       "wins": 9,
-      "losses": 7,
+      "losses": 8,
       "streak": 4,
       "teams": [
         {
@@ -193,7 +193,7 @@
           "days": 15,
           "reigns": 2,
           "wins": 6,
-          "losses": 2,
+          "losses": 3,
           "longestStreak": 4,
           "currentStreak": 0
         },
@@ -472,6 +472,14 @@
       "home": "CBJ",
       "score": "2-7",
       "nhlGameId": "2026020244"
+    },
+    {
+      "num": 18,
+      "date": "2026-11-05",
+      "visitor": "DAL",
+      "home": "CBJ",
+      "score": "1-2",
+      "nhlGameId": "2026020258"
     }
   ]
 }
