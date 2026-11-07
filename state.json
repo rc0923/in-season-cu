@@ -1,8 +1,8 @@
 {
-  "champion": "CBJ",
+  "champion": "BUF",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-11-05",
-  "lastDayTick": "2026-11-06",
+  "lastUpdated": "2026-11-06",
+  "lastDayTick": "2026-11-07",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -12,7 +12,7 @@
       "days": 8,
       "reigns": 3,
       "wins": 5,
-      "losses": 3,
+      "losses": 4,
       "streak": 2,
       "teams": [
         {
@@ -65,9 +65,9 @@
           "days": 3,
           "reigns": 1,
           "wins": 2,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 2,
-          "currentStreak": 2
+          "currentStreak": 0
         },
         {
           "abbr": "DET",
@@ -255,9 +255,9 @@
     },
     {
       "name": "Justin",
-      "days": 4,
-      "reigns": 1,
-      "wins": 2,
+      "days": 5,
+      "reigns": 2,
+      "wins": 3,
       "losses": 5,
       "streak": 2,
       "teams": [
@@ -290,12 +290,12 @@
         },
         {
           "abbr": "BUF",
-          "days": 0,
-          "reigns": 0,
-          "wins": 0,
+          "days": 1,
+          "reigns": 1,
+          "wins": 1,
           "losses": 1,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         },
         {
           "abbr": "LAK",
@@ -480,6 +480,14 @@
       "home": "CBJ",
       "score": "1-2",
       "nhlGameId": "2026020258"
+    },
+    {
+      "num": 19,
+      "date": "2026-11-06",
+      "visitor": "CBJ",
+      "home": "BUF",
+      "score": "2-5",
+      "nhlGameId": "2026020262"
     }
   ]
 }
