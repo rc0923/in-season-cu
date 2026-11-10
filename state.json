@@ -2,7 +2,7 @@
   "champion": "VGK",
   "startingChampion": "CAR",
   "lastUpdated": "2026-11-08",
-  "lastDayTick": "2026-11-09",
+  "lastDayTick": "2026-11-10",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -91,7 +91,7 @@
     },
     {
       "name": "Tyler",
-      "days": 6,
+      "days": 7,
       "reigns": 3,
       "wins": 3,
       "losses": 2,
@@ -117,7 +117,7 @@
         },
         {
           "abbr": "VGK",
-          "days": 1,
+          "days": 2,
           "reigns": 1,
           "wins": 1,
           "losses": 0,
