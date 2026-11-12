@@ -1,8 +1,8 @@
 {
   "champion": "VGK",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-11-08",
-  "lastDayTick": "2026-11-11",
+  "lastUpdated": "2026-11-11",
+  "lastDayTick": "2026-11-12",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -91,11 +91,11 @@
     },
     {
       "name": "Tyler",
-      "days": 8,
+      "days": 9,
       "reigns": 3,
-      "wins": 3,
-      "losses": 2,
-      "streak": 0,
+      "wins": 4,
+      "losses": 3,
+      "streak": 2,
       "teams": [
         {
           "abbr": "FLA",
@@ -117,19 +117,19 @@
         },
         {
           "abbr": "VGK",
-          "days": 3,
+          "days": 4,
           "reigns": 1,
-          "wins": 1,
+          "wins": 2,
           "losses": 0,
-          "longestStreak": 0,
-          "currentStreak": 1
+          "longestStreak": 2,
+          "currentStreak": 2
         },
         {
           "abbr": "UTA",
           "days": 0,
           "reigns": 0,
           "wins": 0,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
           "currentStreak": 0
         },
@@ -496,6 +496,14 @@
       "home": "BUF",
       "score": "4-1",
       "nhlGameId": "2026020278"
+    },
+    {
+      "num": 21,
+      "date": "2026-11-11",
+      "visitor": "UTA",
+      "home": "VGK",
+      "score": "3-5",
+      "nhlGameId": "2026020296"
     }
   ]
 }
