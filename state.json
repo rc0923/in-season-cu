@@ -2,7 +2,7 @@
   "champion": "NSH",
   "startingChampion": "CAR",
   "lastUpdated": "2026-11-13",
-  "lastDayTick": "2026-11-14",
+  "lastDayTick": "2026-11-15",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -173,7 +173,7 @@
     },
     {
       "name": "Rob",
-      "days": 22,
+      "days": 23,
       "reigns": 4,
       "wins": 10,
       "losses": 8,
@@ -244,7 +244,7 @@
         },
         {
           "abbr": "NSH",
-          "days": 1,
+          "days": 2,
           "reigns": 1,
           "wins": 1,
           "losses": 0,
