@@ -1,8 +1,8 @@
 {
-  "champion": "SJS",
+  "champion": "CGY",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-11-15",
-  "lastDayTick": "2026-11-17",
+  "lastUpdated": "2026-11-17",
+  "lastDayTick": "2026-11-18",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -12,7 +12,7 @@
       "days": 10,
       "reigns": 4,
       "wins": 6,
-      "losses": 4,
+      "losses": 5,
       "streak": 2,
       "teams": [
         {
@@ -56,9 +56,9 @@
           "days": 6,
           "reigns": 2,
           "wins": 3,
-          "losses": 1,
+          "losses": 2,
           "longestStreak": 2,
-          "currentStreak": 1
+          "currentStreak": 0
         },
         {
           "abbr": "CBJ",
@@ -255,9 +255,9 @@
     },
     {
       "name": "Justin",
-      "days": 6,
-      "reigns": 2,
-      "wins": 3,
+      "days": 7,
+      "reigns": 3,
+      "wins": 4,
       "losses": 6,
       "streak": 2,
       "teams": [
@@ -326,12 +326,12 @@
         },
         {
           "abbr": "CGY",
-          "days": 0,
-          "reigns": 0,
-          "wins": 0,
+          "days": 1,
+          "reigns": 1,
+          "wins": 1,
           "losses": 1,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         }
       ]
     }
@@ -520,6 +520,14 @@
       "home": "SJS",
       "score": "2-4",
       "nhlGameId": "2026020330"
+    },
+    {
+      "num": 24,
+      "date": "2026-11-17",
+      "visitor": "CGY",
+      "home": "SJS",
+      "score": "5-2",
+      "nhlGameId": "2026020343"
     }
   ]
 }
