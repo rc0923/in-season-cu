@@ -2,14 +2,14 @@
   "champion": "MIN",
   "startingChampion": "CAR",
   "lastUpdated": "2026-11-19",
-  "lastDayTick": "2026-11-20",
+  "lastDayTick": "2026-11-21",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
   "players": [
     {
       "name": "Brendan",
-      "days": 11,
+      "days": 12,
       "reigns": 5,
       "wins": 7,
       "losses": 5,
@@ -26,7 +26,7 @@
         },
         {
           "abbr": "MIN",
-          "days": 1,
+          "days": 2,
           "reigns": 1,
           "wins": 1,
           "losses": 0,
