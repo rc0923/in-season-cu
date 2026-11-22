@@ -1,18 +1,18 @@
 {
-  "champion": "MIN",
+  "champion": "VAN",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-11-19",
-  "lastDayTick": "2026-11-21",
+  "lastUpdated": "2026-11-21",
+  "lastDayTick": "2026-11-22",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
   "players": [
     {
       "name": "Brendan",
-      "days": 12,
-      "reigns": 5,
-      "wins": 7,
-      "losses": 5,
+      "days": 13,
+      "reigns": 6,
+      "wins": 8,
+      "losses": 6,
       "streak": 2,
       "teams": [
         {
@@ -29,9 +29,9 @@
           "days": 2,
           "reigns": 1,
           "wins": 1,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
-          "currentStreak": 1
+          "currentStreak": 0
         },
         {
           "abbr": "MTL",
@@ -80,12 +80,12 @@
         },
         {
           "abbr": "VAN",
-          "days": 0,
-          "reigns": 0,
-          "wins": 0,
+          "days": 1,
+          "reigns": 1,
+          "wins": 1,
           "losses": 0,
           "longestStreak": 0,
-          "currentStreak": 0
+          "currentStreak": 1
         }
       ]
     },
@@ -536,6 +536,14 @@
       "home": "CGY",
       "score": "4-1",
       "nhlGameId": "2026020355"
+    },
+    {
+      "num": 26,
+      "date": "2026-11-21",
+      "visitor": "MIN",
+      "home": "VAN",
+      "score": "3-4",
+      "nhlGameId": "2026020371"
     }
   ]
 }
