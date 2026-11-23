@@ -1,8 +1,8 @@
 {
-  "champion": "VAN",
+  "champion": "CHI",
   "startingChampion": "CAR",
-  "lastUpdated": "2026-11-21",
-  "lastDayTick": "2026-11-22",
+  "lastUpdated": "2026-11-22",
+  "lastDayTick": "2026-11-23",
   "season": "2026-27",
   "seasonEndDate": "2027-04-10",
   "seasonOver": false,
@@ -12,7 +12,7 @@
       "days": 13,
       "reigns": 6,
       "wins": 8,
-      "losses": 6,
+      "losses": 7,
       "streak": 2,
       "teams": [
         {
@@ -83,9 +83,9 @@
           "days": 1,
           "reigns": 1,
           "wins": 1,
-          "losses": 0,
+          "losses": 1,
           "longestStreak": 0,
-          "currentStreak": 1
+          "currentStreak": 0
         }
       ]
     },
@@ -255,9 +255,9 @@
     },
     {
       "name": "Justin",
-      "days": 8,
-      "reigns": 3,
-      "wins": 4,
+      "days": 9,
+      "reigns": 4,
+      "wins": 5,
       "losses": 7,
       "streak": 2,
       "teams": [
@@ -317,12 +317,12 @@
         },
         {
           "abbr": "CHI",
-          "days": 4,
-          "reigns": 1,
-          "wins": 2,
+          "days": 5,
+          "reigns": 2,
+          "wins": 3,
           "losses": 2,
           "longestStreak": 2,
-          "currentStreak": 0
+          "currentStreak": 1
         },
         {
           "abbr": "CGY",
@@ -544,6 +544,14 @@
       "home": "VAN",
       "score": "3-4",
       "nhlGameId": "2026020371"
+    },
+    {
+      "num": 27,
+      "date": "2026-11-22",
+      "visitor": "CHI",
+      "home": "VAN",
+      "score": "6-3",
+      "nhlGameId": "2026020377"
     }
   ]
 }
